@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <Version>1.0</Version>
+        <Title>Specflow fluent table asserter</Title>
+        <Description>A specflow extension library to simplify table assertion with fluent code.</Description>
+        <PackageTags>specflow BDD behaviour-driven-development</PackageTags>
+    </PropertyGroup>
+
+</Project>
