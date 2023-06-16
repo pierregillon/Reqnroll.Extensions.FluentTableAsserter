@@ -29,7 +29,12 @@ public class FluentAsserter<T> : IFluentAsserter<T>
             : PropertyConfiguration.Default;
 
         var propertyDefinition =
-            new PropertyDefinition<T, TProperty>(typeof(TProperty), propertyExpression, configuration);
+            new PropertyDefinition<T, TProperty>(propertyExpression, configuration);
+
+        if (_propertyDefinitions.Any(x => x.Equals(propertyDefinition)))
+        {
+            throw new PropertyDefinitionAlreadyExists(propertyDefinition.ToString());
+        }
 
         _propertyDefinitions.Add(propertyDefinition);
 
@@ -60,7 +65,8 @@ public class FluentAsserter<T> : IFluentAsserter<T>
             var data = _actualValues.ElementAt(rowIndex);
             for (var headerIndex = 0; headerIndex < _table.Rows.Count; headerIndex++)
             {
-                var propertyDefinition = _propertyDefinitions[headerIndex];
+                var headerName = _table.Header.ElementAt(headerIndex);
+                var propertyDefinition = _propertyDefinitions.Single(x => x.IsMappedTo(headerName));
                 var expectedValue = row[headerIndex];
 
                 var result = propertyDefinition.AssertEquivalent(expectedValue, data);
@@ -71,7 +77,7 @@ public class FluentAsserter<T> : IFluentAsserter<T>
                         rowIndex,
                         result.MemberName,
                         result.ActualValue,
-                        _table.Header.ElementAt(headerIndex),
+                        headerName,
                         expectedValue
                     );
                 }

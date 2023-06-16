@@ -93,6 +93,57 @@ public class UserCode
                 .NotThrow();
         }
 
+        [Fact]
+        public void Cannot_declare_multiple_times_same_property()
+        {
+            var table = new Table("FirstName");
+
+            var action = () => table
+                .ShouldMatch(new List<Person>())
+                .WithProperty(x => x.FirstName)
+                .WithProperty(x => x.FirstName)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<PropertyDefinitionAlreadyExists>()
+                .WithMessage("The same property definition exists: Person.FirstName -> [FirstName]");
+        }
+
+        [Theory]
+        [InlineData("FirstName")]
+        [InlineData("First name")]
+        public void Cannot_declare_multiple_times_same_property_without_different_column_name(string headerVariation)
+        {
+            var table = new Table("FirstName");
+
+            var action = () => table
+                .ShouldMatch(new List<Person>())
+                .WithProperty(x => x.FirstName)
+                .WithProperty(x => x.FirstName, options => options.WithColumnName(headerVariation))
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<Exception>();
+        }
+
+        [Fact]
+        public void Can_declare_multiple_times_same_property_but_with_different_column_name()
+        {
+            var table = new Table("FirstName", "FirstName2");
+
+            var action = () => table
+                .ShouldMatch(new List<Person>())
+                .WithProperty(x => x.FirstName)
+                .WithProperty(x => x.FirstName, options => options.WithColumnName("FirstName2"))
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
         [Theory]
         [InlineData("First Name")]
         [InlineData("First name")]
@@ -134,19 +185,34 @@ public class UserCode
                 .NotThrow();
         }
 
-        private record Person(string FirstName);
+        [Fact]
+        public void Accepts_multiple_property_mapping_to_the_same_column()
+        {
+            var table = new Table("Name");
+
+            var action = () => table
+                .ShouldMatch(new List<Person>())
+                .WithProperty(x => x.FirstName, options => options
+                    .WithColumnName("Name"))
+                .WithProperty(x => x.LastName, options => options
+                    .WithColumnName("Name"))
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        private record Person(string FirstName, string LastName);
     }
-    
+
     public class ComparingTableAndDataWithSameColumnsAsProperties
     {
         private readonly Table _expectedTable;
-        private readonly List<Person> _actualPersons;
+        private readonly List<Person> _actualPersons = new();
 
-        public ComparingTableAndDataWithSameColumnsAsProperties()
-        {
+        public ComparingTableAndDataWithSameColumnsAsProperties() =>
             _expectedTable = new Table("FirstName", "LastName");
-            _actualPersons = new List<Person>();
-        }
 
         [Fact]
         public void Does_not_throw_when_values_are_equivalent()
@@ -161,6 +227,23 @@ public class UserCode
                 .AssertEquivalent();
 
             assertion
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
+        public void Accepts_property_declaration_in_different_order_than_columns()
+        {
+            _expectedTable.AddRow("John", "Doe");
+            _actualPersons.Add(new Person("John", "Doe"));
+
+            var action = () => _expectedTable
+                .ShouldMatch(_actualPersons)
+                .WithProperty(x => x.LastName)
+                .WithProperty(x => x.FirstName)
+                .AssertEquivalent();
+
+            action
                 .Should()
                 .NotThrow();
         }
@@ -185,7 +268,27 @@ public class UserCode
                 );
         }
 
+        [Fact]
+        public void Throws_when_column_value_cannot_be_converted_to_property_type()
+        {
+            var expectedTemperatureTable = new Table("Value");
+            expectedTemperatureTable.AddRow("Test");
 
-        public record Person(string FirstName, string LastName);
+            var actualTemperatures = new List<Temperature> { new(100) };
+
+            var action = () => expectedTemperatureTable
+                .ShouldMatch(actualTemperatures)
+                .WithProperty(x => x.Value)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<CannotConvertColumnValueToPropertyTypeException>()
+                .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
+        }
+
+        private record Person(string FirstName, string LastName);
+
+        private record Temperature(int Value);
     }
 }
