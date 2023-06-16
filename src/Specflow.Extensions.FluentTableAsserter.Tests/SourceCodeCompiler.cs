@@ -6,7 +6,7 @@ using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
 
-public class SourceCodeCompiler
+public static class SourceCodeCompiler
 {
     public static IEnumerable<string> Compile(params string[] sourceCodes)
     {
