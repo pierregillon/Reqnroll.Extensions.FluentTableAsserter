@@ -10,7 +10,7 @@ A specflow extension library to simplify table assertion with fluent code.
 
 [Nuget package](https://www.nuget.org/packages/Crafty.Specflow.Extensions.FluentTableAsserter):
 
-    dotnet add package Crafty.Specflow.Extensions.FluentTableAsserter~~~~
+    dotnet add package Crafty.Specflow.Extensions.FluentTableAsserter
 
 ## Why?
 
