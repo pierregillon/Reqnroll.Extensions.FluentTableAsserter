@@ -37,9 +37,9 @@ public record PropertyDefinition<T, TProperty>(
     {
         try
         {
-            if (Configuration.ColumnValueConvertion is not null)
+            if (Configuration.ColumnValueConversion is not null)
             {
-                return Configuration.ColumnValueConvertion(stringExpectedValue);
+                return Configuration.ColumnValueConversion(stringExpectedValue);
             }
 
             return (TProperty)Convert.ChangeType(stringExpectedValue, typeof(TProperty));
