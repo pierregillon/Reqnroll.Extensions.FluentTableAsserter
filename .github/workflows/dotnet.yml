@@ -27,3 +27,6 @@ jobs:
       - name: Pack
         working-directory: src
         run: dotnet pack -o out --no-build --configuration Release
+      - name: Push nuget
+        working-directory: src
+        run: dotnet nuget push ./out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
