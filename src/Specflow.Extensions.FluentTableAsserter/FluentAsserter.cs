@@ -66,20 +66,24 @@ public class FluentAsserter<T> : IFluentAsserter<T>
             for (var headerIndex = 0; headerIndex < _table.Rows.Count; headerIndex++)
             {
                 var headerName = _table.Header.ElementAt(headerIndex);
-                var propertyDefinition = _propertyDefinitions.Single(x => x.IsMappedTo(headerName));
-                var expectedValue = row[headerIndex];
+                var propertyDefinitions = _propertyDefinitions.Where(x => x.IsMappedTo(headerName));
 
-                var result = propertyDefinition.AssertEquivalent(expectedValue, data);
-
-                if (!result.IsSuccess)
+                foreach (var propertyDefinition in propertyDefinitions)
                 {
-                    throw new ExpectedTableNotEquivalentToDataException(
-                        rowIndex,
-                        result.MemberName,
-                        result.ActualValue,
-                        headerName,
-                        expectedValue
-                    );
+                    var expectedValue = row[headerIndex];
+
+                    var result = propertyDefinition.AssertEquivalent(expectedValue, data);
+
+                    if (!result.IsSuccess)
+                    {
+                        throw new ExpectedTableNotEquivalentToDataException(
+                            rowIndex,
+                            result.MemberName,
+                            result.ActualValue,
+                            headerName,
+                            expectedValue
+                        );
+                    }
                 }
             }
         }

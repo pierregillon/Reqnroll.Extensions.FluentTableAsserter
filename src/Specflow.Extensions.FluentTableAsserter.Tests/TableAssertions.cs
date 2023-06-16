@@ -298,7 +298,27 @@ public class UserCode
             var action = () => expectedTemperatureTable
                 .ShouldMatch(actualTemperatures)
                 .WithProperty(x => x.Value, options => options
-                    .WithConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                    .WithColumnConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
+        public void Accepts_multiple_property_mapping_to_the_same_column()
+        {
+            _expectedTable.AddRow("Jonathan", "Doe");
+            _actualPersons.Add(new Person("Jonathan", "Jonathan"));
+
+            var action = () => _expectedTable
+                .ShouldMatch(_actualPersons)
+                .WithProperty(x => x.FirstName, options => options
+                    .WithColumnName("FirstName"))
+                .WithProperty(x => x.LastName, options => options
+                    .WithColumnName("FirstName"))
+                .IgnoringColumn("LastName")
                 .AssertEquivalent();
 
             action

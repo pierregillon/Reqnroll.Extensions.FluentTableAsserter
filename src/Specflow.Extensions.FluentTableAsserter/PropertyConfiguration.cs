@@ -9,6 +9,6 @@ public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<strin
     public PropertyConfiguration<T, TProperty> WithColumnName(string columnName) =>
         this with { ColumnName = columnName };
 
-    public PropertyConfiguration<T, TProperty> WithConversion(Func<string, TProperty> convertion) =>
+    public PropertyConfiguration<T, TProperty> WithColumnConversion(Func<string, TProperty> convertion) =>
         this with { ColumnValueConvertion = convertion };
 }
