@@ -8,11 +8,11 @@ public class ExpectedTableNotEquivalentToDataException : Exception
         int index,
         string memberName,
         object? actualValue,
-        string headerName,
+        string columnName,
         string expectedValue
     )
         : base(
-            $"At index {index}, '{memberName}' actual data is '{actualValue}' but should be '{expectedValue}' from column '{headerName}'.")
+            $"At index {index}, '{memberName}' actual data is '{actualValue}' but should be '{expectedValue}' from column '{columnName}'.")
     {
     }
 }

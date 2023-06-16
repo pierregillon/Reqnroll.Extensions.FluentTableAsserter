@@ -10,10 +10,9 @@ public class FluentAsserter<T> : IFluentAsserter<T>
 {
     private readonly Table _table;
     private readonly IEnumerable<T> _actualValues;
-    private readonly List<IPropertyDefinition<T>> _propertyDefinitions = new();
-    private readonly List<string> _ignoredColumns = new();
+    private readonly PropertyDefinitions<T> _propertyDefinitions = new();
 
-    public FluentAsserter(Table table, IEnumerable<T> actualValues)
+    internal FluentAsserter(Table table, IEnumerable<T> actualValues)
     {
         _table = table;
         _actualValues = actualValues;
@@ -28,36 +27,20 @@ public class FluentAsserter<T> : IFluentAsserter<T>
             ? configure(PropertyConfiguration<T, TProperty>.Default)
             : PropertyConfiguration<T, TProperty>.Default;
 
-        var propertyDefinition =
-            new PropertyDefinition<T, TProperty>(propertyExpression, configuration);
-
-        if (_propertyDefinitions.Any(x => x.Equals(propertyDefinition)))
-        {
-            throw new PropertyDefinitionAlreadyExists(propertyDefinition.ToString());
-        }
-
-        _propertyDefinitions.Add(propertyDefinition);
+        _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, configuration));
 
         return this;
     }
 
     public IFluentAsserter<T> IgnoringColumn(string columnName)
     {
-        _ignoredColumns.Add(columnName);
+        _propertyDefinitions.AddIgnoredColumnName(columnName);
         return this;
     }
 
     public void AssertEquivalent()
     {
-        var notMappedHeaders = _table.Header
-            .Where(header => !_ignoredColumns.Contains(header))
-            .Where(header => !_propertyDefinitions.Any(p => p.IsMappedTo(header)))
-            .ToArray();
-
-        if (notMappedHeaders.Any())
-        {
-            throw new MissingColumnDefinitionException(typeof(T), notMappedHeaders.First());
-        }
+        _propertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
 
         if (_table.RowCount != _actualValues.Count())
         {
@@ -67,15 +50,16 @@ public class FluentAsserter<T> : IFluentAsserter<T>
         for (var rowIndex = 0; rowIndex < _table.Rows.Count; rowIndex++)
         {
             var row = _table.Rows[rowIndex];
+
             var data = _actualValues.ElementAt(rowIndex);
-            for (var headerIndex = 0; headerIndex < _table.Rows.Count; headerIndex++)
+
+            foreach (var columnName in _table.Header)
             {
-                var headerName = _table.Header.ElementAt(headerIndex);
-                var propertyDefinitions = _propertyDefinitions.Where(x => x.IsMappedTo(headerName));
+                var propertyDefinitions = _propertyDefinitions.ForColumn(columnName);
 
                 foreach (var propertyDefinition in propertyDefinitions)
                 {
-                    var expectedValue = row[headerIndex];
+                    var expectedValue = row[columnName];
 
                     var result = propertyDefinition.AssertEquivalent(expectedValue, data);
 
@@ -85,20 +69,12 @@ public class FluentAsserter<T> : IFluentAsserter<T>
                             rowIndex,
                             result.MemberName,
                             result.ActualValue,
-                            headerName,
+                            columnName,
                             expectedValue
                         );
                     }
                 }
             }
         }
-    }
-}
-
-public class TableRowCountIsDifferentThanElementCountException : Exception
-{
-    public TableRowCountIsDifferentThanElementCountException(int rowCount, int elementCount)
-        : base($"Table row count ({rowCount}) is different than element count ({elementCount})")
-    {
     }
 }
