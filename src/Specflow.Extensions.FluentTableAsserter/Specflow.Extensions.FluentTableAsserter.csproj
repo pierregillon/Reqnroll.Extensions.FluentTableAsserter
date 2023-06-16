@@ -10,4 +10,8 @@
         <PackageTags>specflow BDD behaviour-driven-development</PackageTags>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="SpecFlow" Version="3.9.74" />
+    </ItemGroup>
+
 </Project>
