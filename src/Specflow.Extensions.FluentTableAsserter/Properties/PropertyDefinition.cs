@@ -1,7 +1,9 @@
 using System;
 using System.Linq.Expressions;
+using Specflow.Extensions.FluentTableAsserter.Asserters;
+using Specflow.Extensions.FluentTableAsserter.Exceptions;
 
-namespace Specflow.Extensions.FluentTableAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
 public record PropertyDefinition<T, TProperty>(
     Expression<Func<T, TProperty>> Expression,

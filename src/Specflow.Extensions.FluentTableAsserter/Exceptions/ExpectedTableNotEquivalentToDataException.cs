@@ -1,6 +1,6 @@
 using System;
 
-namespace Specflow.Extensions.FluentTableAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Exceptions;
 
 public class ExpectedTableNotEquivalentToDataException : Exception
 {

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Specflow.Extensions.FluentTableAsserter;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     public static bool EqualsHumanized(this string input1, string input2) =>
         FromHumanizedToNormalized(input1) == FromHumanizedToNormalized(input2);
@@ -20,7 +20,7 @@ public static class StringExtensions
     {
         var str = text.Normalize(NormalizationForm.FormD);
         var stringBuilder = new StringBuilder();
-        foreach (var ch in str.Where(ch => CharUnicodeInfo.GetUnicodeCategory((char)ch) != UnicodeCategory.NonSpacingMark))
+        foreach (var ch in str.Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark))
         {
             stringBuilder.Append(ch);
         }

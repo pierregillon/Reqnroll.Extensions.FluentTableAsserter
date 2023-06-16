@@ -1,4 +1,4 @@
-namespace Specflow.Extensions.FluentTableAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Asserters;
 
 public record AssertionResult(bool IsSuccess, string MemberName, object? ActualValue)
 {

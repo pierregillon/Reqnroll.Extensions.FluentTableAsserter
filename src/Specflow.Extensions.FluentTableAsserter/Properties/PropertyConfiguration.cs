@@ -1,6 +1,6 @@
 using System;
 
-namespace Specflow.Extensions.FluentTableAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
 public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<string, TProperty>? ColumnValueConvertion)
 {

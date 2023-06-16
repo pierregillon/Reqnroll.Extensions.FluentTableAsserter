@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Specflow.Extensions.FluentTableAsserter.Asserters;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter;

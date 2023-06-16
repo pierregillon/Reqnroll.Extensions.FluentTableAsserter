@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Specflow.Extensions.FluentTableAsserter.Exceptions;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
@@ -106,7 +107,7 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<PropertyDefinitionAlreadyExists>()
+                .Throw<PropertyDefinitionAlreadyExistsException>()
                 .WithMessage("The same property definition exists: Person.FirstName -> [FirstName]");
         }
 

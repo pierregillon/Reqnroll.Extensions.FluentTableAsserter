@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Specflow.Extensions.FluentTableAsserter.Exceptions;
 
-namespace Specflow.Extensions.FluentTableAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
 internal class PropertyDefinitions<T>
 {
@@ -12,7 +13,7 @@ internal class PropertyDefinitions<T>
     {
         if (_propertyDefinitions.Any(x => x.Equals(propertyDefinition)))
         {
-            throw new PropertyDefinitionAlreadyExists(propertyDefinition.ToString());
+            throw new PropertyDefinitionAlreadyExistsException(propertyDefinition.ToString());
         }
 
         _propertyDefinitions.Add(propertyDefinition);

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Specflow.Extensions.FluentTableAsserter.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.Properties;
 using TechTalk.SpecFlow;
 
-namespace Specflow.Extensions.FluentTableAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Asserters;
 
 public class FluentAsserter<T> : IFluentAsserter<T>
 {
