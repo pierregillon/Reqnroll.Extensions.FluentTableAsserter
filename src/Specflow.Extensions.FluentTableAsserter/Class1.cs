@@ -8,11 +8,14 @@ namespace Specflow.Extensions.FluentTableAsserter;
 
 public static class TableExtensions
 {
-    public static FluentAsserter<TElement>
-        ShouldMatch<TElement>(this Table table, IEnumerable<TElement> actualValues) => new(table, actualValues);
+    public static IFluentAsserterInitialization<TElement> ShouldMatch<TElement>(
+        this Table table,
+        IEnumerable<TElement> actualValues
+    )
+        => new FluentAsserter<TElement>(table, actualValues);
 }
 
-public class FluentAsserter<T>
+public class FluentAsserter<T> : IFluentAsserter<T>, IFluentAsserterInitialization<T>
 {
     private readonly Table _table;
     private readonly IEnumerable<T> _actualValues;
@@ -24,7 +27,7 @@ public class FluentAsserter<T>
         _actualValues = actualValues;
     }
 
-    public FluentAsserter<T> WithProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
+    public IFluentAsserter<T> WithProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
     {
         _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(typeof(TProperty), propertyExpression));
         return this;
@@ -56,6 +59,17 @@ public class FluentAsserter<T>
             }
         }
     }
+}
+
+public interface IFluentAsserter<T>
+{
+    IFluentAsserter<T> WithProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression);
+    void AssertEquivalent();
+}
+
+public interface IFluentAsserterInitialization<T>
+{
+    IFluentAsserter<T> WithProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression);
 }
 
 public record PropertyDefinition<T, TProperty> : IPropertyDefinition<T>

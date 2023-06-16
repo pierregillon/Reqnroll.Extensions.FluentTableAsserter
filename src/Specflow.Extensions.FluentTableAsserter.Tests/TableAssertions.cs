@@ -5,6 +5,44 @@ namespace Specflow.Extensions.FluentTableAsserter.Tests;
 
 public class TableAssertions
 {
+    public class InstanciatingAssertion
+    {
+        [Fact]
+        public void Fails_to_compile_when_no_property_provided_has_been_defined()
+        {
+            const string code = @"
+
+using System.Collections.Generic;
+using TechTalk.SpecFlow;
+using Specflow.Extensions.FluentTableAsserter;
+
+namespace Test;
+
+public class UserCode
+{
+    public static void Execute()
+    {
+        new Table()
+            .ShouldMatch(new List<Person>())
+            .AssertEquivalent();
+    }
+
+    public record Person;
+}
+
+";
+
+            var errors = SourceCodeCompiler.Compile(code);
+
+            errors
+                .Should()
+                .BeEquivalentTo("'Table' does not contain a definition for 'ShouldMatch' and no "
+                    + "accessible extension method 'ShouldMatch' accepting a first argument of type 'Table' "
+                    + "could be found (are you missing a using directive or an assembly reference?)"
+                );
+        }
+    }
+
     public class ComparingTableAndDataWithSameColumnsAsProperties
     {
         private readonly Table _expectedTable;
