@@ -59,6 +59,11 @@ public class FluentAsserter<T> : IFluentAsserter<T>
             throw new MissingColumnDefinitionException(typeof(T), notMappedHeaders.First());
         }
 
+        if (_table.RowCount != _actualValues.Count())
+        {
+            throw new TableRowCountIsDifferentThanElementCountException(_table.RowCount, _actualValues.Count());
+        }
+
         for (var rowIndex = 0; rowIndex < _table.Rows.Count; rowIndex++)
         {
             var row = _table.Rows[rowIndex];
@@ -87,5 +92,13 @@ public class FluentAsserter<T> : IFluentAsserter<T>
                 }
             }
         }
+    }
+}
+
+public class TableRowCountIsDifferentThanElementCountException : Exception
+{
+    public TableRowCountIsDifferentThanElementCountException(int rowCount, int elementCount)
+        : base($"Table row count ({rowCount}) is different than element count ({elementCount})")
+    {
     }
 }

@@ -326,6 +326,44 @@ public class UserCode
                 .NotThrow();
         }
 
+        [Fact]
+        public void Throws_when_row_count_greater_than_element_count()
+        {
+            _expectedTable.AddRow("Jonathan", "Doe");
+            _expectedTable.AddRow("Test", "test");
+            _actualPersons.Add(new Person("Jonathan", "Doe"));
+
+            var action = () => _expectedTable
+                .ShouldMatch(_actualPersons)
+                .WithProperty(x => x.FirstName)
+                .WithProperty(x => x.LastName)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<TableRowCountIsDifferentThanElementCountException>()
+                .WithMessage("Table row count (2) is different than element count (1)");
+        }
+
+        [Fact]
+        public void Throws_when_row_count_smaller_than_element_count()
+        {
+            _expectedTable.AddRow("Jonathan", "Doe");
+            _actualPersons.Add(new Person("Jonathan", "Doe"));
+            _actualPersons.Add(new Person("Test", "Test"));
+
+            var action = () => _expectedTable
+                .ShouldMatch(_actualPersons)
+                .WithProperty(x => x.FirstName)
+                .WithProperty(x => x.LastName)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<TableRowCountIsDifferentThanElementCountException>()
+                .WithMessage("Table row count (1) is different than element count (2)");
+        }
+
         private record Person(string FirstName, string LastName);
 
         private record Temperature(int Value);
