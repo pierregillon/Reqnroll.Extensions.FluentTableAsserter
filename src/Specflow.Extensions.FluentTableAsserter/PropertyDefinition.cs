@@ -5,18 +5,18 @@ namespace Specflow.Extensions.FluentTableAsserter;
 
 public record PropertyDefinition<T, TProperty>(
     Expression<Func<T, TProperty>> Expression,
-    PropertyConfiguration Configuration
+    PropertyConfiguration<T, TProperty> Configuration
 ) : IPropertyDefinition<T>
 {
-    private readonly string _memberName = FindColumnName(Expression);
-    private readonly Func<T, TProperty> _func = Expression.Compile();
+    private readonly string _propertyName = FindPropertyName(Expression);
+    private readonly Func<T, TProperty> _getPropertyValue = Expression.Compile();
 
-    private string ColumnOrMemberName => Configuration.ColumnName ?? _memberName;
+    private string ColumnOrMemberName => Configuration.ColumnName ?? _propertyName;
 
     public AssertionResult AssertEquivalent(string stringExpectedValue, T data)
     {
         var expectedValue = ConvertToPropertyType(stringExpectedValue);
-        var actualValue = _func(data);
+        var actualValue = _getPropertyValue(data);
 
         if (expectedValue is null && actualValue is null)
         {
@@ -28,20 +28,25 @@ public record PropertyDefinition<T, TProperty>(
             return AssertionResult.Success;
         }
 
-        return AssertionResult.Fail(_memberName, actualValue);
+        return AssertionResult.Fail(_propertyName, actualValue);
     }
 
-    private object ConvertToPropertyType(string stringExpectedValue)
+    private TProperty ConvertToPropertyType(string stringExpectedValue)
     {
         try
         {
-            return Convert.ChangeType(stringExpectedValue, typeof(TProperty));
+            if (Configuration.ColumnValueConvertion is not null)
+            {
+                return Configuration.ColumnValueConvertion(stringExpectedValue);
+            }
+
+            return (TProperty)Convert.ChangeType(stringExpectedValue, typeof(TProperty));
         }
         catch (FormatException ex)
         {
             throw new CannotConvertColumnValueToPropertyTypeException(
                 stringExpectedValue,
-                _memberName,
+                _propertyName,
                 typeof(TProperty),
                 typeof(T),
                 ex
@@ -51,7 +56,7 @@ public record PropertyDefinition<T, TProperty>(
 
     public bool IsMappedTo(string columnName) => ColumnOrMemberName.EqualsHumanized(columnName);
 
-    private static string FindColumnName(Expression expression)
+    private static string FindPropertyName(Expression expression)
     {
         string? result;
         try
@@ -60,8 +65,8 @@ public record PropertyDefinition<T, TProperty>(
             {
                 MemberExpression e => e.Member.Name,
                 MethodCallExpression e => e.Method.Name,
-                LambdaExpression e => FindColumnName(e.Body),
-                UnaryExpression e => FindColumnName(e.Operand),
+                LambdaExpression e => FindPropertyName(e.Body),
+                UnaryExpression e => FindPropertyName(e.Operand),
                 _ => null
             };
         }
@@ -98,5 +103,5 @@ public record PropertyDefinition<T, TProperty>(
 
     public override int GetHashCode() => HashCode.Combine(Expression.ToString(), ColumnOrMemberName);
 
-    public override string ToString() => $"{typeof(T).Name}.{_memberName} -> [{ColumnOrMemberName}]";
+    public override string ToString() => $"{typeof(T).Name}.{_propertyName} -> [{ColumnOrMemberName}]";
 }

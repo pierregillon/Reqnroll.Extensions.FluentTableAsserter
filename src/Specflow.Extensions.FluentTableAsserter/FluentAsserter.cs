@@ -21,12 +21,12 @@ public class FluentAsserter<T> : IFluentAsserter<T>
 
     public IFluentAsserter<T> WithProperty<TProperty>(
         Expression<Func<T, TProperty>> propertyExpression,
-        Func<PropertyConfiguration, PropertyConfiguration>? configure = null
+        Func<PropertyConfiguration<T, TProperty>, PropertyConfiguration<T, TProperty>>? configure = null
     )
     {
         var configuration = configure is not null
-            ? configure(PropertyConfiguration.Default)
-            : PropertyConfiguration.Default;
+            ? configure(PropertyConfiguration<T, TProperty>.Default)
+            : PropertyConfiguration<T, TProperty>.Default;
 
         var propertyDefinition =
             new PropertyDefinition<T, TProperty>(propertyExpression, configuration);

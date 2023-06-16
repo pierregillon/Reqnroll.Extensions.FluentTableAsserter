@@ -287,6 +287,25 @@ public class UserCode
                 .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
         }
 
+        [Fact]
+        public void Accepts_when_column_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
+        {
+            var expectedTemperatureTable = new Table("Value");
+            expectedTemperatureTable.AddRow("hundred");
+
+            var actualTemperatures = new List<Temperature> { new(100) };
+
+            var action = () => expectedTemperatureTable
+                .ShouldMatch(actualTemperatures)
+                .WithProperty(x => x.Value, options => options
+                    .WithConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
         private record Person(string FirstName, string LastName);
 
         private record Temperature(int Value);

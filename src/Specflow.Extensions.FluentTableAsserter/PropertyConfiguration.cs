@@ -1,9 +1,14 @@
+using System;
+
 namespace Specflow.Extensions.FluentTableAsserter;
 
-public record PropertyConfiguration(string? ColumnName)
+public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<string, TProperty>? ColumnValueConvertion)
 {
-    public static PropertyConfiguration Default => new((string?)null);
+    public static PropertyConfiguration<T, TProperty> Default => new(null, default);
 
-    public PropertyConfiguration WithColumnName(string columnName) =>
+    public PropertyConfiguration<T, TProperty> WithColumnName(string columnName) =>
         this with { ColumnName = columnName };
+
+    public PropertyConfiguration<T, TProperty> WithConversion(Func<string, TProperty> convertion) =>
+        this with { ColumnValueConvertion = convertion };
 }
