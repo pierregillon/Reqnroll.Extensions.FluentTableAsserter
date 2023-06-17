@@ -17,7 +17,7 @@ A specflow extension library to simplify table assertion with fluent code.
 Asserting Specflow table can be very painful in large scale application.
 Even
 if [SpecFlow.Assist Helpers](https://docs.specflow.org/projects/specflow/en/latest/Bindings/SpecFlow-Assist-Helpers.html)
-is a good start to simplify data rehydration from table, is it not very flexible.
+is a good start to simplify data rehydration from table, it is not very flexible.
 
 The idea to this library is:
 
@@ -52,7 +52,9 @@ You can write the assertion like this:
             .AssertEquivalent();
 ```
 
-- 'Email address' column name is permissive
+Columns are automatically determine based on property names.
+'EmailAddress' works but it is also permissive, ´Email adress' works too
+and is recommended because it is closer than natural language.
 
 Later in your scenarios, if you need to assert only customer names, you can simply do:
 
