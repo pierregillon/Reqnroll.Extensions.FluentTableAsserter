@@ -45,14 +45,14 @@ public class CustomerSteps
         _error!.Message.Should().Be(errorMessage);
     }
 
-    private void AssertTableValid(Table table) => table
-        .ShouldMatch(_customers)
+    private void AssertTableValid(Table table) => _customers
+        .ShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FullName)
         .WithProperty(x => x.FullName, o => o.MappedToColumn("Name"))
         .WithProperty(x => x.EmailAddress)
         .WithProperty(x => x.EmailAddress, o => o.MappedToColumn("Address"))
         .WithProperty(x => x.Job)
-        .AssertEquivalent();
+        .Assert();
 }
 
 internal record Customer(string FullName, string EmailAddress, Job Job);

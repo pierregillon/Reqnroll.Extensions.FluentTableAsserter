@@ -15,16 +15,18 @@ A specflow extension library to simplify table assertion with fluent code.
 ## Why?
 
 Asserting Specflow table can be very painful in large scale application.
-Even 
+Even
 if [SpecFlow.Assist Helpers](https://docs.specflow.org/projects/specflow/en/latest/Bindings/SpecFlow-Assist-Helpers.html)
 is a good start to simplify data rehydration from table, it is not very flexible.
 
 The idea to this library is:
 
-- just little code required
-- avoid creating `record` for every single table to rehydrate
-- tend to be **ubiquitous language centric** (clever string parsing as 'human readable')
-- make column declaration optional in gherkin, in order to focus to columns that matter for the scenario
+- very little code required
+- can be extended with **extra configuration**
+- avoid creating `record` or `class` for every single table to rehydrate
+- tend to be **ubiquitous language centric** (clever string parsing from *human readable* input)
+- make column declaration **optional** in gherkin, in order to declare only the columns that are
+- relevant for a scenario
 
 ## Examples
 
@@ -45,15 +47,16 @@ You can write the following assertion:
 ```csharp
 [Then(@"the customer list is")]
     public void ThenTheCustomerListIs(Table table)
-        => table
-            .ShouldMatch(_customers)
+        => _customers
+            .ShouldBeEquivalentToTable(table)
             .WithProperty(x => x.Name)
             .WithProperty(x => x.EmailAddress)
             .WithProperty(x => x.Job)
-            .AssertEquivalent();
+            .Assert();
 ```
 
 Where, for the example, `Customer` is:
+
 ```csharp
 internal record Customer(
     string FullName, 
@@ -67,17 +70,19 @@ public enum Job
     ChiefProductOfficer
 }
 ```
+
 You can find more example [here](./src/Examples).
 
 ## Mapping between columns and properties
 
-The table asserter is smart and try to determine column name of the table, based on 
-the mapped property names.
+The table asserter is smart and try to determine column name of the table, based on
+the **mapped property names**.
 
-`EmailAddress` property is automatically mapped to `EmailAddress` column or to any another more
-natural set of words, like `Email address` or `email address` or any other case.
+`EmailAddress` property is automatically mapped to `EmailAddress` column or to more readable
+set of words, like `Email address` or `email address`.
 
-The same is applied for enum values : `ChiefProductOfficer` value works but also `Chief product officer`.
+The same principle is applied for parsing enum values : `ChiefProductOfficer` value works
+but also `Chief product officer`.
 
 It allows to have gherkin scenario closer to **natural language**.
 

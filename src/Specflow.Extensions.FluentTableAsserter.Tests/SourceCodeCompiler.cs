@@ -32,7 +32,7 @@ public static class SourceCodeCompiler
                 MetadataReference.CreateFromFile(GetAssembly("netstandard").Location),
                 MetadataReference.CreateFromFile(GetAssembly("System.Runtime").Location),
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(Path.GetFileName(Assembly.GetExecutingAssembly().Location)),
+                MetadataReference.CreateFromFile(Path.GetFileName(typeof(TableExtensions).Assembly.Location)),
                 MetadataReference.CreateFromFile(Assembly.GetAssembly(typeof(Table))!.Location)
             )
             .AddSyntaxTrees(trees);

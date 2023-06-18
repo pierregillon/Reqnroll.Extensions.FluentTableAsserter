@@ -25,8 +25,8 @@ public class UserCode
 {
     public static void Execute()
     {
-        new Table(""some header"")
-            .ShouldMatch(new List<Person>())
+        new List<Person>()
+            .ShouldBeEquivalentToTable(new Table(""some header""))
             .AssertEquivalent();
     }
 
@@ -38,9 +38,11 @@ public class UserCode
             code
                 .Should()
                 .NotCompile()
-                .WithErrors("'Table' does not contain a definition for 'ShouldMatch' and no "
-                    + "accessible extension method 'ShouldMatch' accepting a first argument of type 'Table' "
-                    + "could be found (are you missing a using directive or an assembly reference?)"
+                .WithErrors(
+                    "'IFluentAsserterInitialization<UserCode.Person>' does not contain a definition for 'AssertEquivalent' "
+                    + "and no accessible extension method 'AssertEquivalent' accepting a first argument of type "
+                    + "'IFluentAsserterInitialization<UserCode.Person>' could be found (are you missing a "
+                    + "using directive or an assembly reference?)"
                 );
         }
 
@@ -49,7 +51,7 @@ public class UserCode
         {
             List<Person> persons = null!;
 
-            var wrongAction = () => SomeTable.ShouldMatch(persons);
+            var wrongAction = () => persons.ShouldBeEquivalentToTable(SomeTable);
 
             wrongAction
                 .Should()
@@ -57,20 +59,23 @@ public class UserCode
                 .WithMessage("Value cannot be null. (Parameter 'actualElements')");
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         private record Person;
     }
 
     public class ColumnsCompatibilityCheck
     {
+        private static readonly IEnumerable<Person> EmptyPersonList = Array.Empty<Person>();
+
         [Fact]
         public void Fails_when_table_has_columns_that_has_not_been_mapped_to_element_property()
         {
             var table = new Table("Test");
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -83,11 +88,11 @@ public class UserCode
         {
             var table = new Table("FirstName", "Test");
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .IgnoringColumn("Test")
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -99,11 +104,11 @@ public class UserCode
         {
             var table = new Table("FirstName");
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -118,11 +123,11 @@ public class UserCode
         {
             var table = new Table("FirstName");
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName, options => options.MappedToColumn(headerVariation))
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -134,11 +139,11 @@ public class UserCode
         {
             var table = new Table("FirstName", "FirstName2");
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName, options => options.MappedToColumn("FirstName2"))
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -155,10 +160,10 @@ public class UserCode
         {
             var table = new Table(header);
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -175,11 +180,11 @@ public class UserCode
         {
             var table = new Table(header);
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options
                     .MappedToColumn("MyFirstName"))
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -191,19 +196,20 @@ public class UserCode
         {
             var table = new Table("Name");
 
-            var action = () => table
-                .ShouldMatch(new List<Person>())
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options
                     .MappedToColumn("Name"))
                 .WithProperty(x => x.LastName, options => options
                     .MappedToColumn("Name"))
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
                 .NotThrow();
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         private record Person(string FirstName, string LastName);
     }
 
@@ -216,11 +222,11 @@ public class UserCode
         public ComparingRowsAndValues()
         {
             _expectedTable = new Table("FirstName", "LastName");
-            _assertion = () => _expectedTable
-                .ShouldMatch(_actualPersons)
+            _assertion = () => _actualPersons
+                .ShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.LastName)
-                .AssertEquivalent();
+                .Assert();
         }
 
         [Fact]
@@ -239,11 +245,11 @@ public class UserCode
             _expectedTable.AddRow("John", "Doe");
             _actualPersons.Add(new Person("John", "Doe"));
 
-            var action = () => _expectedTable
-                .ShouldMatch(_actualPersons)
+            var action = () => _actualPersons
+                .ShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.LastName)
                 .WithProperty(x => x.FirstName)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -296,14 +302,14 @@ public class UserCode
             _expectedTable.AddRow("Jonathan", "Doe");
             _actualPersons.Add(new Person("Jonathan", "Jonathan"));
 
-            var action = () => _expectedTable
-                .ShouldMatch(_actualPersons)
+            var action = () => _actualPersons
+                .ShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.FirstName, options => options
                     .MappedToColumn("FirstName"))
                 .WithProperty(x => x.LastName, options => options
                     .MappedToColumn("FirstName"))
                 .IgnoringColumn("LastName")
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -330,11 +336,11 @@ public class UserCode
             _expectedTemperatureTable.AddRow("Test", "Celsius");
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Celsius));
 
-            var action = () => _expectedTemperatureTable
-                .ShouldMatch(_actualTemperatures)
+            var action = () => _actualTemperatures
+                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .IgnoringColumn("Type")
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -348,12 +354,12 @@ public class UserCode
             _expectedTemperatureTable.AddRow("hundred", "Celsius");
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Celsius));
 
-            var action = () => _expectedTemperatureTable
-                .ShouldMatch(_actualTemperatures)
+            var action = () => _actualTemperatures
+                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value, options => options
                     .WithColumnConversion(columnValue => columnValue == "hundred" ? 100 : -1))
                 .IgnoringColumn("Type")
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -366,11 +372,11 @@ public class UserCode
             _expectedTemperatureTable.AddRow("100", "kelvin");
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Kelvin));
 
-            var action = () => _expectedTemperatureTable
-                .ShouldMatch(_actualTemperatures)
+            var action = () => _actualTemperatures
+                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -385,11 +391,11 @@ public class UserCode
             _expectedTemperatureTable.AddRow("100", humanReadable);
             _actualTemperatures.Add(new Temperature(100, TemperatureType.SomeOtherValue));
 
-            var action = () => _expectedTemperatureTable
-                .ShouldMatch(_actualTemperatures)
+            var action = () => _actualTemperatures
+                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -402,11 +408,11 @@ public class UserCode
             _expectedTemperatureTable.AddRow("100", "test");
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Kelvin));
 
-            var action = () => _expectedTemperatureTable
-                .ShouldMatch(_actualTemperatures)
+            var action = () => _actualTemperatures
+                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
-                .AssertEquivalent();
+                .Assert();
 
             action
                 .Should()
@@ -420,7 +426,6 @@ public class UserCode
         {
             Celsius,
             Kelvin,
-            Fahrenheit,
             SomeOtherValue
         }
     }

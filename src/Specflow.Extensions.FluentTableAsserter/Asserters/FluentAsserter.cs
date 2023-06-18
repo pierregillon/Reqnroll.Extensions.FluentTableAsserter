@@ -40,7 +40,9 @@ public class FluentAsserter<T> : IFluentAsserter<T>
         return this;
     }
 
-    public void AssertEquivalent()
+    public void AssertEquivalent() => Assert();
+
+    public void Assert()
     {
         _propertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
 
