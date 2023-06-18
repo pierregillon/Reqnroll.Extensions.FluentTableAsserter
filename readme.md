@@ -15,16 +15,16 @@ A specflow extension library to simplify table assertion with fluent code.
 ## Why?
 
 Asserting Specflow table can be very painful in large scale application.
-Even
+Even 
 if [SpecFlow.Assist Helpers](https://docs.specflow.org/projects/specflow/en/latest/Bindings/SpecFlow-Assist-Helpers.html)
 is a good start to simplify data rehydration from table, it is not very flexible.
 
 The idea to this library is:
 
 - just little code required
-- avoid creating records for every single table to rehydrate
-- tend to be ubiquitous language centric (clever string parsing as 'human readable')
-- make column declaration optional in gherkin, in order to focus the columns that matter for the scenario
+- avoid creating `record` for every single table to rehydrate
+- tend to be **ubiquitous language centric** (clever string parsing as 'human readable')
+- make column declaration optional in gherkin, in order to focus to columns that matter for the scenario
 
 ## Examples
 
@@ -40,7 +40,7 @@ Scenario: List all registered customers
       | Sam Doe  | sam.doe@gmail.com  |
 ```
 
-You can write the assertion like this:
+You can write the following assertion:
 
 ```csharp
 [Then(@"the customer list is")]
@@ -53,8 +53,8 @@ You can write the assertion like this:
 ```
 
 Columns are automatically determine based on property names.
-'EmailAddress' works but it is also permissive, ´Email adress' works too
-and is recommended because it is closer than natural language.
+`EmailAddress` works but it is also permissive: `Email address` works too
+and is recommended as it is closer to natural language.
 
 Later in your scenarios, if you need to assert only customer names, you can simply do:
 
@@ -74,3 +74,4 @@ Scenario: Other scenario
 - [ ] natively handle enumeration without converter
 - [ ] handle single object assertion (instead of list)
 - [ ] add more examples
+- [ ] reversed converter from value to column value
