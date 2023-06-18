@@ -42,6 +42,16 @@ public record PropertyDefinition<T, TProperty>(
                 return Configuration.ColumnValueConversion(stringExpectedValue);
             }
 
+            if (typeof(TProperty).IsEnum)
+            {
+                if (!HumanReadableExtensions.TryParseEnum(typeof(TProperty), stringExpectedValue, out var enumValue))
+                {
+                    throw new CannotParseEnumToEnumValuException<TProperty>(stringExpectedValue);
+                }
+
+                return (TProperty)enumValue;
+            }
+
             return (TProperty)Convert.ChangeType(stringExpectedValue, typeof(TProperty));
         }
         catch (FormatException ex)
@@ -56,7 +66,7 @@ public record PropertyDefinition<T, TProperty>(
         }
     }
 
-    public bool IsMappedTo(string columnName) => ColumnOrMemberName.EqualsHumanized(columnName);
+    public bool IsMappedTo(string columnName) => ColumnOrMemberName.EqualsHumanReadable(columnName);
 
     private static string FindPropertyName(Expression expression)
     {
@@ -100,7 +110,7 @@ public record PropertyDefinition<T, TProperty>(
         }
 
         return Expression.ToString().Equals(other.Expression.ToString())
-            && ColumnOrMemberName.EqualsHumanized(other.ColumnOrMemberName);
+            && ColumnOrMemberName.EqualsHumanReadable(other.ColumnOrMemberName);
     }
 
     public override int GetHashCode() => HashCode.Combine(Expression.ToString(), ColumnOrMemberName);

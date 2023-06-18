@@ -32,12 +32,12 @@ For the following scenario:
 
 ```gherkin
 Scenario: List all registered customers
-    When I register the customer "John Doe" with email address "john.doe@gmail.com"
-    And I register the customer "Sam Doe" with email address "sam.doe@gmail.com"
+    When I register a scientist customer "John Doe" with email address "john.doe@gmail.com"
+    And I register a chief product officer customer "Sam Smith" with email address "sam.smith@gmail.com"
     Then the customer list is
-      | Name     | Email address      |
-      | John Doe | john.doe@gmail.com |
-      | Sam Doe  | sam.doe@gmail.com  |
+      | Name      | Email address       | Job                   |
+      | John Doe  | john.doe@gmail.com  | Scientist             |
+      | Sam Smith | sam.smith@gmail.com | Chief product officer |
 ```
 
 You can write the following assertion:
@@ -49,29 +49,58 @@ You can write the following assertion:
             .ShouldMatch(_customers)
             .WithProperty(x => x.Name)
             .WithProperty(x => x.EmailAddress)
+            .WithProperty(x => x.Job)
             .AssertEquivalent();
 ```
 
-Columns are automatically determine based on property names.
-`EmailAddress` works but it is also permissive: `Email address` works too
-and is recommended as it is closer to natural language.
+Where, for the example, `Customer` is:
+```csharp
+internal record Customer(
+    string FullName, 
+    string EmailAddress, 
+    Job Job
+ );
 
-Later in your scenarios, if you need to assert only customer names, you can simply do:
+public enum Job
+{
+    Scientist,
+    ChiefProductOfficer
+}
+```
+## Mapping between columns and properties
 
-For the following scenario:
+The table asserter is smart and try to determine column name of the table, based on 
+the mapped property names.
+
+`EmailAddress` property is automatically mapped to `EmailAddress` column or to any another more
+natural set of words, like `Email address` or `email address` or any other case.
+
+The same is applied for enum values : `ChiefProductOfficer` value works but also `Chief product officer`.
+
+It allows to have gherkin scenario closer to **natural language**.
+
+## Optional columns
+
+All columns are **optional by default**, so you don't need to specify them all in all
+your scenarios. **The ones you specify are used to assert your data**. Depending on your
+scenario, you can specify only the ones that are relevant.
+
+From the previous example, a new customer deletion scenario can be asserted only with the column
+`Name`, we can volontary remove the `EmailAddress`: because it is useless here, the `Name`
+is enough.
 
 ```gherkin
-Scenario: Other scenario
-    Given ...
+Scenario: Deleted customers are not listed anymore
+    When I delete the customer "John Doe"
     Then the customer list is
-      | Name     |
-      | John Doe |
-      | Sam Doe  |
+      | Name      |
+      | Sam Smith |
 ```
 
 ## Remaining tasks
 
-- [ ] natively handle enumeration without converter
+- [x] natively handle enumeration without converter
 - [ ] handle single object assertion (instead of list)
 - [ ] add more examples
 - [ ] reversed converter from value to column value
+- [ ] handle enum flags

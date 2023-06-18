@@ -4,20 +4,20 @@ As a developer
 I want to be able to compare element list to a gherkin table and get clear error message in case of failed assertion
 
 Background:
-    When I register the customer "John Doe" with email address "john.doe@gmail.com"
-    And I register the customer "Sam Smith" with email address "sam.smith@gmail.com"
+    When I register a scientist customer "John Doe" with email address "john.doe@gmail.com"
+    And I register a chief product officer customer "Sam Smith" with email address "sam.smith@gmail.com"
 
 Scenario: Assertion works using exact property names
     Then the customer list is
-      | FullName  | EmailAddress        |
-      | John Doe  | john.doe@gmail.com  |
-      | Sam Smith | sam.smith@gmail.com |
+      | FullName  | EmailAddress        | Job                 |
+      | John Doe  | john.doe@gmail.com  | Scientist           |
+      | Sam Smith | sam.smith@gmail.com | ChiefProductOfficer |
 
-Scenario: Assertion works using human readable property names
+Scenario: Assertion works using human readable property names and values
     Then the customer list is
-      | Full name | Email address       |
-      | John Doe  | john.doe@gmail.com  |
-      | Sam Smith | sam.smith@gmail.com |
+      | Full name | Email address       | Job                   |
+      | John Doe  | john.doe@gmail.com  | Scientist             |
+      | Sam Smith | sam.smith@gmail.com | Chief product officer |
 
 Scenario: Assertion works using only some property names
     Then the customer list is

@@ -13,9 +13,9 @@ public class CustomerSteps
 
     public CustomerSteps(ScenarioInfo scenarioInfo) => _scenarioInfo = scenarioInfo;
 
-    [When(@"I register the customer ""(.*)"" with email address ""(.*)""")]
-    public void WhenIRegisterTheCustomerWithEmailAddress(string name, string emailAddress) =>
-        _customers.Add(new Customer(name, emailAddress));
+    [When(@"I register a (.*) customer ""(.*)"" with email address ""(.*)""")]
+    public void WhenIRegisterTheCustomerWithEmailAddress(Job job, string name, string emailAddress) =>
+        _customers.Add(new Customer(name, emailAddress, job));
 
     [When(@"asserting the customer list with")]
     [Then(@"the customer list is")]
@@ -51,7 +51,14 @@ public class CustomerSteps
         .WithProperty(x => x.FullName, o => o.MappedToColumn("Name"))
         .WithProperty(x => x.EmailAddress)
         .WithProperty(x => x.EmailAddress, o => o.MappedToColumn("Address"))
+        .WithProperty(x => x.Job)
         .AssertEquivalent();
 }
 
-internal record Customer(string FullName, string EmailAddress);
+internal record Customer(string FullName, string EmailAddress, Job Job);
+
+public enum Job
+{
+    Scientist,
+    ChiefProductOfficer
+}

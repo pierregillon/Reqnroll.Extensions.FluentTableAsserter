@@ -207,27 +207,28 @@ public class UserCode
         private record Person(string FirstName, string LastName);
     }
 
-    public class ComparingTableAndDataWithSameColumnsAsProperties
+    public class ComparingRowsAndValues
     {
         private readonly Table _expectedTable;
         private readonly List<Person> _actualPersons = new();
+        private readonly Action _assertion;
 
-        public ComparingTableAndDataWithSameColumnsAsProperties() =>
-            _expectedTable = new Table("FirstName", "LastName");
-
-        [Fact]
-        public void Does_not_throw_when_values_are_equivalent()
+        public ComparingRowsAndValues()
         {
-            _expectedTable.AddRow("John", "Doe");
-            _actualPersons.Add(new Person("John", "Doe"));
-
-            var assertion = () => _expectedTable
+            _expectedTable = new Table("FirstName", "LastName");
+            _assertion = () => _expectedTable
                 .ShouldMatch(_actualPersons)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.LastName)
                 .AssertEquivalent();
+        }
 
-            assertion
+        [Fact]
+        public void Does_not_throw_when_values_are_equivalent_to_rows()
+        {
+            _expectedTable.AddRow("John", "Doe");
+            _actualPersons.Add(new Person("John", "Doe"));
+            _assertion
                 .Should()
                 .NotThrow();
         }
@@ -255,13 +256,7 @@ public class UserCode
             _expectedTable.AddRow("John", "Doe");
             _actualPersons.Add(new Person("Jonathan", "Doe"));
 
-            var assertion = () => _expectedTable
-                .ShouldMatch(_actualPersons)
-                .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.LastName)
-                .AssertEquivalent();
-
-            assertion
+            _assertion
                 .Should()
                 .Throw<ExpectedTableNotEquivalentToDataException>()
                 .WithMessage(
@@ -270,41 +265,29 @@ public class UserCode
         }
 
         [Fact]
-        public void Throws_when_column_value_cannot_be_converted_to_property_type()
+        public void Throws_when_row_count_greater_than_element_count()
         {
-            var expectedTemperatureTable = new Table("Value");
-            expectedTemperatureTable.AddRow("Test");
+            _expectedTable.AddRow("Jonathan", "Doe");
+            _expectedTable.AddRow("Test", "test");
+            _actualPersons.Add(new Person("Jonathan", "Doe"));
 
-            var actualTemperatures = new List<Temperature> { new(100) };
-
-            var action = () => expectedTemperatureTable
-                .ShouldMatch(actualTemperatures)
-                .WithProperty(x => x.Value)
-                .AssertEquivalent();
-
-            action
+            _assertion
                 .Should()
-                .Throw<CannotConvertColumnValueToPropertyTypeException>()
-                .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
+                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
+                .WithMessage("Table row count (2) is different than 'Person' count (1)");
         }
 
         [Fact]
-        public void Accepts_when_column_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
+        public void Throws_when_row_count_smaller_than_element_count()
         {
-            var expectedTemperatureTable = new Table("Value");
-            expectedTemperatureTable.AddRow("hundred");
+            _expectedTable.AddRow("Jonathan", "Doe");
+            _actualPersons.Add(new Person("Jonathan", "Doe"));
+            _actualPersons.Add(new Person("Test", "Test"));
 
-            var actualTemperatures = new List<Temperature> { new(100) };
-
-            var action = () => expectedTemperatureTable
-                .ShouldMatch(actualTemperatures)
-                .WithProperty(x => x.Value, options => options
-                    .WithColumnConversion(columnValue => columnValue == "hundred" ? 100 : -1))
-                .AssertEquivalent();
-
-            action
+            _assertion
                 .Should()
-                .NotThrow();
+                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
+                .WithMessage("Table row count (1) is different than 'Person' count (2)");
         }
 
         [Fact]
@@ -327,46 +310,118 @@ public class UserCode
                 .NotThrow();
         }
 
-        [Fact]
-        public void Throws_when_row_count_greater_than_element_count()
-        {
-            _expectedTable.AddRow("Jonathan", "Doe");
-            _expectedTable.AddRow("Test", "test");
-            _actualPersons.Add(new Person("Jonathan", "Doe"));
-
-            var action = () => _expectedTable
-                .ShouldMatch(_actualPersons)
-                .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.LastName)
-                .AssertEquivalent();
-
-            action
-                .Should()
-                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
-                .WithMessage("Table row count (2) is different than 'Person' count (1)");
-        }
-
-        [Fact]
-        public void Throws_when_row_count_smaller_than_element_count()
-        {
-            _expectedTable.AddRow("Jonathan", "Doe");
-            _actualPersons.Add(new Person("Jonathan", "Doe"));
-            _actualPersons.Add(new Person("Test", "Test"));
-
-            var action = () => _expectedTable
-                .ShouldMatch(_actualPersons)
-                .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.LastName)
-                .AssertEquivalent();
-
-            action
-                .Should()
-                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
-                .WithMessage("Table row count (1) is different than 'Person' count (2)");
-        }
-
         private record Person(string FirstName, string LastName);
+    }
 
-        private record Temperature(int Value);
+    public class ColumnValueConvertionToPropertyValue
+    {
+        private readonly Table _expectedTemperatureTable;
+        private readonly List<Temperature> _actualTemperatures;
+
+        public ColumnValueConvertionToPropertyValue()
+        {
+            _expectedTemperatureTable = new Table("Value", "Type");
+            _actualTemperatures = new List<Temperature>();
+        }
+
+        [Fact]
+        public void Throws_when_column_value_cannot_be_converted_to_property_type()
+        {
+            _expectedTemperatureTable.AddRow("Test", "Celsius");
+            _actualTemperatures.Add(new Temperature(100, TemperatureType.Celsius));
+
+            var action = () => _expectedTemperatureTable
+                .ShouldMatch(_actualTemperatures)
+                .WithProperty(x => x.Value)
+                .IgnoringColumn("Type")
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<CannotConvertColumnValueToPropertyTypeException>()
+                .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
+        }
+
+        [Fact]
+        public void Accepts_when_column_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
+        {
+            _expectedTemperatureTable.AddRow("hundred", "Celsius");
+            _actualTemperatures.Add(new Temperature(100, TemperatureType.Celsius));
+
+            var action = () => _expectedTemperatureTable
+                .ShouldMatch(_actualTemperatures)
+                .WithProperty(x => x.Value, options => options
+                    .WithColumnConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                .IgnoringColumn("Type")
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
+        public void Automatically_parse_value_to_enum()
+        {
+            _expectedTemperatureTable.AddRow("100", "kelvin");
+            _actualTemperatures.Add(new Temperature(100, TemperatureType.Kelvin));
+
+            var action = () => _expectedTemperatureTable
+                .ShouldMatch(_actualTemperatures)
+                .WithProperty(x => x.Value)
+                .WithProperty(x => x.Type)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        [Theory]
+        [InlineData("some other value")]
+        [InlineData("Some Other Value")]
+        public void Automatically_parse_human_readable_value_to_enum(string humanReadable)
+        {
+            _expectedTemperatureTable.AddRow("100", humanReadable);
+            _actualTemperatures.Add(new Temperature(100, TemperatureType.SomeOtherValue));
+
+            var action = () => _expectedTemperatureTable
+                .ShouldMatch(_actualTemperatures)
+                .WithProperty(x => x.Value)
+                .WithProperty(x => x.Type)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
+        public void Fails_when_enum_value_invalid()
+        {
+            _expectedTemperatureTable.AddRow("100", "test");
+            _actualTemperatures.Add(new Temperature(100, TemperatureType.Kelvin));
+
+            var action = () => _expectedTemperatureTable
+                .ShouldMatch(_actualTemperatures)
+                .WithProperty(x => x.Value)
+                .WithProperty(x => x.Type)
+                .AssertEquivalent();
+
+            action
+                .Should()
+                .Throw<CannotParseEnumToEnumValuException<TemperatureType>>()
+                .WithMessage("'test' cannot be parsed to any enum value of type TemperatureType.");
+        }
+
+        private record Temperature(int Value, TemperatureType Type);
+
+        private enum TemperatureType
+        {
+            Celsius,
+            Kelvin,
+            Fahrenheit,
+            SomeOtherValue
+        }
     }
 }
