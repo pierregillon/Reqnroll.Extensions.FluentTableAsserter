@@ -6,7 +6,7 @@ public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<strin
 {
     public static PropertyConfiguration<T, TProperty> Default => new(null, default);
 
-    public PropertyConfiguration<T, TProperty> WithColumnName(string columnName) =>
+    public PropertyConfiguration<T, TProperty> MappedToColumn(string columnName) =>
         this with { ColumnName = columnName };
 
     public PropertyConfiguration<T, TProperty> WithColumnConversion(Func<string, TProperty> conversion) =>

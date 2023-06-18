@@ -121,7 +121,7 @@ public class UserCode
             var action = () => table
                 .ShouldMatch(new List<Person>())
                 .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.FirstName, options => options.WithColumnName(headerVariation))
+                .WithProperty(x => x.FirstName, options => options.MappedToColumn(headerVariation))
                 .AssertEquivalent();
 
             action
@@ -137,7 +137,7 @@ public class UserCode
             var action = () => table
                 .ShouldMatch(new List<Person>())
                 .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.FirstName, options => options.WithColumnName("FirstName2"))
+                .WithProperty(x => x.FirstName, options => options.MappedToColumn("FirstName2"))
                 .AssertEquivalent();
 
             action
@@ -178,7 +178,7 @@ public class UserCode
             var action = () => table
                 .ShouldMatch(new List<Person>())
                 .WithProperty(x => x.FirstName, options => options
-                    .WithColumnName("MyFirstName"))
+                    .MappedToColumn("MyFirstName"))
                 .AssertEquivalent();
 
             action
@@ -194,9 +194,9 @@ public class UserCode
             var action = () => table
                 .ShouldMatch(new List<Person>())
                 .WithProperty(x => x.FirstName, options => options
-                    .WithColumnName("Name"))
+                    .MappedToColumn("Name"))
                 .WithProperty(x => x.LastName, options => options
-                    .WithColumnName("Name"))
+                    .MappedToColumn("Name"))
                 .AssertEquivalent();
 
             action
@@ -316,9 +316,9 @@ public class UserCode
             var action = () => _expectedTable
                 .ShouldMatch(_actualPersons)
                 .WithProperty(x => x.FirstName, options => options
-                    .WithColumnName("FirstName"))
+                    .MappedToColumn("FirstName"))
                 .WithProperty(x => x.LastName, options => options
-                    .WithColumnName("FirstName"))
+                    .MappedToColumn("FirstName"))
                 .IgnoringColumn("LastName")
                 .AssertEquivalent();
 
@@ -342,8 +342,8 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<TableRowCountIsDifferentThanElementCountException>()
-                .WithMessage("Table row count (2) is different than element count (1)");
+                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
+                .WithMessage("Table row count (2) is different than 'Person' count (1)");
         }
 
         [Fact]
@@ -361,8 +361,8 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<TableRowCountIsDifferentThanElementCountException>()
-                .WithMessage("Table row count (1) is different than element count (2)");
+                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
+                .WithMessage("Table row count (1) is different than 'Person' count (2)");
         }
 
         private record Person(string FirstName, string LastName);

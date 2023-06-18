@@ -46,7 +46,7 @@ public class FluentAsserter<T> : IFluentAsserter<T>
 
         if (_table.RowCount != _actualValues.Count())
         {
-            throw new TableRowCountIsDifferentThanElementCountException(_table.RowCount, _actualValues.Count());
+            throw new TableRowCountIsDifferentThanElementCountException<T>(_table.RowCount, _actualValues.Count());
         }
 
         for (var rowIndex = 0; rowIndex < _table.Rows.Count; rowIndex++)
