@@ -67,6 +67,8 @@ public enum Job
     ChiefProductOfficer
 }
 ```
+You can find more example [here](./src/Examples).
+
 ## Mapping between columns and properties
 
 The table asserter is smart and try to determine column name of the table, based on 
