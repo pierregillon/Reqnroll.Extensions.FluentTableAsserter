@@ -25,7 +25,23 @@ public record PropertyDefinition<T, TProperty>(
             return AssertionResult.Success;
         }
 
-        if (actualValue!.Equals(expectedValue))
+        if (typeof(TProperty) == typeof(string))
+        {
+            var actual = (string?)(object?)actualValue;
+            var expected = (string?)(object?)expectedValue;
+
+            if (string.IsNullOrEmpty(actual) && string.IsNullOrEmpty(expected))
+            {
+                return AssertionResult.Success;
+            }
+        }
+
+        if (expectedValue is null || actualValue is null)
+        {
+            return AssertionResult.Fail(_propertyName, actualValue);
+        }
+
+        if (actualValue.Equals(expectedValue))
         {
             return AssertionResult.Success;
         }

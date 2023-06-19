@@ -271,6 +271,17 @@ public class UserCode
         }
 
         [Fact]
+        public void Accepts_empty_string_instead_of_null()
+        {
+            _expectedTable.AddRow(string.Empty, "Doe");
+            _actualPersons.Add(new Person(null!, "Doe"));
+
+            _assertion
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
         public void Throws_when_row_count_greater_than_element_count()
         {
             _expectedTable.AddRow("Jonathan", "Doe");
