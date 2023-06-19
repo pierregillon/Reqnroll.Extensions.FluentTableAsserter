@@ -72,7 +72,7 @@ public class FluentAsserter<T> : IFluentAsserter<T>
                         throw new ExpectedTableNotEquivalentToDataException(
                             rowIndex,
                             result.MemberName,
-                            result.ActualValue,
+                            result.StringActualValue,
                             columnName,
                             expectedValue
                         );

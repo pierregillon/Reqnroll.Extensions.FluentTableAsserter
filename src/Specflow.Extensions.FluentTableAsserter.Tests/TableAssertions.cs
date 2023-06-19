@@ -440,4 +440,80 @@ public class UserCode
             SomeOtherValue
         }
     }
+
+    public class ArrayConvertion
+    {
+        [Fact]
+        public void Enumerable_property_type_is_comparable_with_table_column_value()
+        {
+            var table = new Table("Names");
+            table.AddRow("john, sam, eric");
+
+            var elements = new List<Details>
+            {
+                new(new[] { "john", "sam", "eric" })
+            };
+
+            elements
+                .ShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Names, o => o
+                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                )
+                .Assert();
+        }
+
+        [Fact]
+        public void Order_is_preserved_comparing_enumerable()
+        {
+            var table = new Table("Names");
+            table.AddRow("john, sam, eric");
+
+            var elements = new List<Details>
+            {
+                new(new[] { "sam", "john", "eric" })
+            };
+
+            var action = () => elements
+                .ShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Names, o => o
+                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                )
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToDataException>()
+                .WithMessage(
+                    "At index 0, 'Names' actual data is 'sam, john, eric' but should be 'john, sam, eric' from column 'Names'."
+                );
+        }
+
+        [Fact]
+        public void Different_length_fails()
+        {
+            var table = new Table("Names");
+            table.AddRow("john, sam");
+
+            var elements = new List<Details>
+            {
+                new(new[] { "john", "sam", "eric" })
+            };
+
+            var action = () => elements
+                .ShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Names, o => o
+                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                )
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToDataException>()
+                .WithMessage(
+                    "At index 0, 'Names' actual data is 'john, sam, eric' but should be 'john, sam' from column 'Names'."
+                );
+        }
+
+        private record Details(IEnumerable<string> Names);
+    }
 }

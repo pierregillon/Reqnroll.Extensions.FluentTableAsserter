@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Linq;
 using System.Linq.Expressions;
 using Specflow.Extensions.FluentTableAsserter.Asserters;
 using Specflow.Extensions.FluentTableAsserter.Exceptions;
@@ -39,6 +41,30 @@ public record PropertyDefinition<T, TProperty>(
         if (expectedValue is null || actualValue is null)
         {
             return AssertionResult.Fail(_propertyName, actualValue);
+        }
+
+        if (typeof(TProperty).IsEnumerableType())
+        {
+            var actual = (IEnumerable)actualValue;
+            var expected = (IEnumerable)expectedValue;
+
+            var actualArray = actual.Enumerate().ToArray();
+            var expectedArray = expected.Enumerate().ToArray();
+
+            if (actualArray.Length != expectedArray.Length)
+            {
+                return AssertionResult.Fail(_propertyName, actualValue);
+            }
+
+            foreach (var value in actualArray.Zip(expectedArray, (x, y) => (x, y)))
+            {
+                if (!Equals(value.x, value.y))
+                {
+                    return AssertionResult.Fail(_propertyName, actualValue);
+                }
+            }
+
+            return AssertionResult.Success;
         }
 
         if (actualValue.Equals(expectedValue))
@@ -132,4 +158,9 @@ public record PropertyDefinition<T, TProperty>(
     public override int GetHashCode() => HashCode.Combine(Expression.ToString(), ColumnOrMemberName);
 
     public override string ToString() => $"{typeof(T).Name}.{_propertyName} -> [{ColumnOrMemberName}]";
+}
+
+public static class TypeExtensions
+{
+    public static bool IsEnumerableType(this Type type) => type.GetInterface(nameof(IEnumerable)) != null;
 }
