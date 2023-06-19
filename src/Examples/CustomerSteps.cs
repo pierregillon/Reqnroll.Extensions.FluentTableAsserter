@@ -48,9 +48,9 @@ public class CustomerSteps
     private void AssertTableValid(Table table) => _customers
         .ShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FullName)
-        .WithProperty(x => x.FullName, o => o.MappedToColumn("Name"))
+        .WithProperty(x => x.FullName, o => o.ComparedToColumn("Name"))
         .WithProperty(x => x.EmailAddress)
-        .WithProperty(x => x.EmailAddress, o => o.MappedToColumn("Address"))
+        .WithProperty(x => x.EmailAddress, o => o.ComparedToColumn("Address"))
         .WithProperty(x => x.Job)
         .Assert();
 }

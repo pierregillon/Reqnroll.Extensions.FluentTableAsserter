@@ -126,7 +126,7 @@ public class UserCode
             var action = () => EmptyPersonList
                 .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.FirstName, options => options.MappedToColumn(headerVariation))
+                .WithProperty(x => x.FirstName, options => options.ComparedToColumn(headerVariation))
                 .Assert();
 
             action
@@ -142,7 +142,7 @@ public class UserCode
             var action = () => EmptyPersonList
                 .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
-                .WithProperty(x => x.FirstName, options => options.MappedToColumn("FirstName2"))
+                .WithProperty(x => x.FirstName, options => options.ComparedToColumn("FirstName2"))
                 .Assert();
 
             action
@@ -183,7 +183,7 @@ public class UserCode
             var action = () => EmptyPersonList
                 .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options
-                    .MappedToColumn("MyFirstName"))
+                    .ComparedToColumn("MyFirstName"))
                 .Assert();
 
             action
@@ -199,9 +199,9 @@ public class UserCode
             var action = () => EmptyPersonList
                 .ShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options
-                    .MappedToColumn("Name"))
+                    .ComparedToColumn("Name"))
                 .WithProperty(x => x.LastName, options => options
-                    .MappedToColumn("Name"))
+                    .ComparedToColumn("Name"))
                 .Assert();
 
             action
@@ -305,9 +305,9 @@ public class UserCode
             var action = () => _actualPersons
                 .ShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.FirstName, options => options
-                    .MappedToColumn("FirstName"))
+                    .ComparedToColumn("FirstName"))
                 .WithProperty(x => x.LastName, options => options
-                    .MappedToColumn("FirstName"))
+                    .ComparedToColumn("FirstName"))
                 .IgnoringColumn("LastName")
                 .Assert();
 
@@ -357,7 +357,7 @@ public class UserCode
             var action = () => _actualTemperatures
                 .ShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value, options => options
-                    .WithColumnConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                    .WithColumnValueConversion(columnValue => columnValue == "hundred" ? 100 : -1))
                 .IgnoringColumn("Type")
                 .Assert();
 

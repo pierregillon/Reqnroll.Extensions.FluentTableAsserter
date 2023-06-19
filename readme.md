@@ -59,7 +59,7 @@ Where, for the example, `Customer` is:
 
 ```csharp
 internal record Customer(
-    string FullName, 
+    string Name, 
     string EmailAddress, 
     Job Job
  );
@@ -75,7 +75,7 @@ You can find more example [here](./src/Examples).
 
 ## Mapping between columns and properties
 
-The table asserter is smart and try to determine column name of the table, based on
+The table asserter is **smart** 🤓 and try to determine column name of the table, based on
 the **mapped property names**.
 
 `EmailAddress` property is automatically mapped to `EmailAddress` column or to more readable
@@ -85,6 +85,55 @@ The same principle is applied for parsing enum values : `ChiefProductOfficer` va
 but also `Chief product officer`.
 
 It allows to have gherkin scenario closer to **natural language**.
+
+## Override default comparison behaviour
+
+In certain cases, you would want to override the column that is compared to the property.
+A second argument of `.WithProperty()` allows you to provide a delegate to configure the `PropertyConfiguration` object.
+
+### Override column name
+
+```csharp
+.WithProperty(x => x.Name, o => o.ComparedToColumn("FullName"))
+```
+
+> 💡 Remember in **DDD guidelines**, a strong objective is to share the **same language across the team / company**, from
+> domain
+> experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a **customer
+** has a **full name**
+> instead of a **name**, it is preferable to rename the property `Name` into `FullName` instead of overriding the mapped
+> column.
+
+### Define conversion delegate
+
+If the column value type (string) cannot be converted to the property type, you must define how the table asserter will
+converted it, by providing a conversion delegate.
+
+```csharp
+.WithProperty(x => x.Price, o => o.WithColumnValueConversion(columnValue => ...)
+```
+
+For example, given the following `Price` record.
+
+```csharp
+ public record Price(decimal Amount, string Symbol);
+```
+
+If the table looks
+
+```gherkin
+Scenario: Created products are listed
+    When I create the product "Black jacket" for 100 USD
+    Then the product list is
+      | Name         | Price |
+      | Black jacket | $100  |
+```
+
+You can define the conversion as:
+
+```csharp
+.WithProperty(x => x.Price, o => o.WithColumnValueConversion(columnValue => Price.Parse(columnValue))
+```
 
 ## Optional columns
 
@@ -110,4 +159,7 @@ Scenario: Deleted customers are not listed anymore
 - [ ] handle single object assertion (instead of list)
 - [ ] add more examples
 - [ ] reversed converter from value to column value
+- [ ] Provide default list comparison delegate converter
 - [ ] handle enum flags
+- [ ] provide examples on ColumnValueConversion
+- [ ] provide examples on chained property expression to assert sub elements
