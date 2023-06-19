@@ -97,10 +97,12 @@ A second argument of `.WithProperty()` allows you to provide a delegate to confi
 .WithProperty(x => x.Name, o => o.ComparedToColumn("FullName"))
 ```
 
+It is useful when your gherkin language is different than english but your classes and records still are in english.
+
 > 💡 Remember in **DDD guidelines**, a strong objective is to share the **same language across the team / company**, from
 > domain
-> experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a **customer
-** has a **full name**
+> experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a **customer**
+> has a **full name**
 > instead of a **name**, it is preferable to rename the property `Name` into `FullName` instead of overriding the mapped
 > column.
 
@@ -163,3 +165,4 @@ Scenario: Deleted customers are not listed anymore
 - [ ] handle enum flags
 - [ ] provide examples on ColumnValueConversion
 - [ ] provide examples on chained property expression to assert sub elements
+- [ ] automatic conversion using implicit operator converter
