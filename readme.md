@@ -112,7 +112,10 @@ If the column value type (string) cannot be converted to the property type, you 
 converted it, by providing a conversion delegate.
 
 ```csharp
-.WithProperty(x => x.Price, o => o.WithColumnValueConversion(columnValue => ...)
+.WithProperty(
+    x => x.Price,
+    o => o.WithColumnValueConversion(columnValue => ...)
+)
 ```
 
 For example, given the following `Price` record.
@@ -134,7 +137,10 @@ Scenario: Created products are listed
 You can define the conversion as:
 
 ```csharp
-.WithProperty(x => x.Price, o => o.WithColumnValueConversion(columnValue => Price.Parse(columnValue))
+.WithProperty(
+    x => x.Price,
+    o => o.WithColumnValueConversion(columnValue => Price.Parse(columnValue)
+)
 ```
 
 ## Optional columns
