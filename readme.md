@@ -164,6 +164,7 @@ Scenario: Deleted customers are not listed anymore
 ## Remaining tasks
 
 - [x] natively handle enumeration without converter
+- [ ] protect if no column match any property defined
 - [ ] handle single object assertion (instead of list)
 - [ ] add more examples
 - [ ] reversed converter from value to column value
@@ -172,3 +173,6 @@ Scenario: Deleted customers are not listed anymore
 - [ ] provide examples on ColumnValueConversion
 - [ ] provide examples on chained property expression to assert sub elements
 - [ ] automatic conversion using implicit operator converter
+- [ ] configure to use regex as assertion method on string
+- [ ] better assert error when chaining method on property (Obj.MyProperty.ToString())
+- [ ] better assert error by providing the table that would match
