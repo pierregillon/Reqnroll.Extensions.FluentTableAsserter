@@ -1,7 +1,7 @@
-Feature: Element list assertion with table
+Feature: Collection assertion with table
 In order to assert the system works as expected
 As a developer
-I want to be able to compare element list to a gherkin table and get clear error message in case of failed assertion
+I want to be able to compare a item collection to a gherkin table and get clear error message in case of failed assertion
 
 Background:
     When I register a scientist customer "John Doe" with email address "john.doe@gmail.com"

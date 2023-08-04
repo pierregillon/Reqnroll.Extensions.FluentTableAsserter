@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Specflow.Extensions.FluentTableAsserter.Exceptions;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 
 internal class CannotConvertColumnValueToPropertyTypeException : Exception
 {

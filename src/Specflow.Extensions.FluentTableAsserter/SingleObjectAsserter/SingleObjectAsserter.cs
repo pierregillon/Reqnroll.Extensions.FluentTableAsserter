@@ -1,0 +1,86 @@
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
+using Specflow.Extensions.FluentTableAsserter.Properties;
+using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
+using TechTalk.SpecFlow;
+
+namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
+
+public class SingleObjectAsserter<TElement> : IFluentAsserter<TElement>
+{
+    private readonly Table _table;
+    private readonly TElement _actualElement;
+    private readonly SingleObjectPropertyDefinitions<TElement> _propertyDefinitions = new();
+
+    public SingleObjectAsserter(Table table, TElement actualElement)
+    {
+        _table = table;
+        _actualElement = actualElement;
+    }
+
+    public IFluentAsserter<TElement> WithProperty<TProperty>(
+        Expression<Func<TElement, TProperty>> propertyExpression,
+        Func<PropertyConfiguration<TElement, TProperty>, PropertyConfiguration<TElement, TProperty>>? configure = null
+    )
+    {
+        var configuration = configure is not null
+            ? configure(PropertyConfiguration<TElement, TProperty>.Default)
+            : PropertyConfiguration<TElement, TProperty>.Default;
+
+        _propertyDefinitions.Add(new PropertyDefinition<TElement, TProperty>(propertyExpression, configuration));
+
+        return this;
+    }
+
+    public IFluentAsserter<TElement> IgnoringColumn(string columnName)
+    {
+        _propertyDefinitions.AddIgnoredColumnName(columnName);
+        return this;
+    }
+
+    public void AssertEquivalent() => Assert();
+
+    public void Assert()
+    {
+        if (_table.Header.Count != 2)
+        {
+            throw new InvalidColumnCountForObjectAssertionException();
+        }
+
+        if (!_table.Rows.Any())
+        {
+            throw new NoFieldToEvaluateException();
+        }
+
+        var fieldNames = _table.Rows
+            .Select(x => x.Values.First())
+            .Distinct()
+            .ToArray();
+
+        _propertyDefinitions.EnsureColumnAreCorrectlyMapped(fieldNames);
+
+        foreach (var rowGroup in _table.Rows.GroupBy(x => x.Values.First(), x => x.Values.Last()))
+        {
+            var fieldName = rowGroup.Key;
+            var expectedValue = string.Join(Environment.NewLine, rowGroup.Select(x => x).ToArray());
+            var propertyDefinitions = _propertyDefinitions.ForColumn(fieldName);
+
+            foreach (var propertyDefinition in propertyDefinitions)
+            {
+                var result = propertyDefinition.AssertEquivalent(expectedValue, _actualElement);
+
+                if (!result.IsSuccess)
+                {
+                    throw new ExpectedTableNotEquivalentToInstanceException(
+                        result.MemberName,
+                        result.StringActualValue,
+                        fieldName,
+                        expectedValue
+                    );
+                }
+            }
+        }
+    }
+}

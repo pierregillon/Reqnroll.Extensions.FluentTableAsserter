@@ -1,7 +1,7 @@
 using Specflow.Extensions.FluentTableAsserter;
 using TechTalk.SpecFlow;
 
-namespace Examples;
+namespace Examples.Steps;
 
 [Binding]
 public class CustomerSteps

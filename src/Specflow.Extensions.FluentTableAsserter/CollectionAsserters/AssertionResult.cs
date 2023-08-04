@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Linq;
 
-namespace Specflow.Extensions.FluentTableAsserter.Asserters;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
 public record AssertionResult(bool IsSuccess, string MemberName, object? ActualValue)
 {

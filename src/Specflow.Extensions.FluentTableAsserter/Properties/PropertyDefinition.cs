@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
-using Specflow.Extensions.FluentTableAsserter.Asserters;
-using Specflow.Extensions.FluentTableAsserter.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
+using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;
 

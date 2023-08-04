@@ -1,4 +1,4 @@
-Feature: Object assertion with table
+Feature: Single object assertion with table
 In order to assert the system works as expected
 As a developer
 I want to be able to compare an object to a gherkin table and get clear error message in case of failed assertion

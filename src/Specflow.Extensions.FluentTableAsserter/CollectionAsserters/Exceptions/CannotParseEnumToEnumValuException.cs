@@ -1,6 +1,6 @@
 using System;
 
-namespace Specflow.Extensions.FluentTableAsserter.Exceptions;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 
 internal class CannotParseEnumToEnumValuException<T> : Exception
 {

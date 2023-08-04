@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Specflow.Extensions.FluentTableAsserter.Asserters;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
 public static class EnumerableExtensions
 {

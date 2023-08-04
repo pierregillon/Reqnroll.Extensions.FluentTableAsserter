@@ -1,7 +1,7 @@
 using Specflow.Extensions.FluentTableAsserter;
 using TechTalk.SpecFlow;
 
-namespace Examples;
+namespace Examples.Steps;
 
 [Binding]
 public class EmailSteps
@@ -30,7 +30,7 @@ public class EmailSteps
     public void WhenAssertingTheEmailPropertiesWith(Table table) =>
         _errorDriver.TryExecute(() => AssertTableValid(table));
 
-    private void AssertTableValid(Table table) => _receivedEmail
+    private void AssertTableValid(Table table) => _receivedEmail!
         .InstanceShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FromEmail)
         .WithProperty(x => x.FromEmail, x => x.ComparedToColumn("From"))

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.Properties;
 
-namespace Specflow.Extensions.FluentTableAsserter.Properties;
+namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
-internal class CollectionPropertyDefinitions<T>
+internal class SingleObjectPropertyDefinitions<T>
 {
     private readonly List<string> _ignoredColumns = new();
     private readonly List<IPropertyDefinition<T>> _propertyDefinitions = new();
@@ -21,11 +22,11 @@ internal class CollectionPropertyDefinitions<T>
 
     public void AddIgnoredColumnName(string columnName) => _ignoredColumns.Add(columnName);
 
-    public void EnsureColumnAreCorrectlyMapped(IEnumerable<string> headers)
+    public void EnsureColumnAreCorrectlyMapped(IEnumerable<string> fieldNames)
     {
-        var notMappedHeaders = headers
-            .Where(header => !_ignoredColumns.Contains(header))
-            .Where(header => !_propertyDefinitions.Any(p => p.IsMappedTo(header)))
+        var notMappedHeaders = fieldNames
+            .Where(fieldName => !_ignoredColumns.Contains(fieldName))
+            .Where(fieldName => !_propertyDefinitions.Any(p => p.IsMappedTo(fieldName)))
             .ToArray();
 
         if (notMappedHeaders.Any())

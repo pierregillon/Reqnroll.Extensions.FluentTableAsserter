@@ -1,6 +1,6 @@
 using System;
 
-namespace Specflow.Extensions.FluentTableAsserter.Exceptions;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 
 public class PropertyDefinitionAlreadyExistsException : Exception
 {

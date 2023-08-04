@@ -28,4 +28,19 @@
       <ProjectReference Include="..\Specflow.Extensions.FluentTableAsserter\Specflow.Extensions.FluentTableAsserter.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Features\CollectionAssertionWithTable.feature.cs">
+        <DependentUpon>ElementListAssertionWithTable.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\SingleObjectAssertionWithTable.feature.cs">
+        <DependentUpon>ObjectAssertionWithTable.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+    </ItemGroup>
+
 </Project>

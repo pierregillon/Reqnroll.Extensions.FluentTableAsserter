@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using FluentAssertions;
-using Specflow.Extensions.FluentTableAsserter.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;

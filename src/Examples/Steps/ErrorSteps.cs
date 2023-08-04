@@ -1,17 +1,14 @@
 using FluentAssertions;
 using TechTalk.SpecFlow;
 
-namespace Examples;
+namespace Examples.Steps;
 
 [Binding]
 public class ErrorSteps
 {
     private readonly ErrorDriver _errorDriver;
 
-    public ErrorSteps(ErrorDriver errorDriver)
-    {
-        _errorDriver = errorDriver;
-    }
+    public ErrorSteps(ErrorDriver errorDriver) => _errorDriver = errorDriver;
 
     [Then(@"an error occurred with ""(.*)""")]
     public void ThenAnErrorOccurredWith(string errorMessage)

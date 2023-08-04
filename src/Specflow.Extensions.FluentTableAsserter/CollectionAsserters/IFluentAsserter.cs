@@ -1,6 +1,6 @@
 using System;
 
-namespace Specflow.Extensions.FluentTableAsserter.Asserters;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
 public interface IFluentAsserter<T> : IFluentAsserterInitialization<T>
 {

@@ -1,4 +1,4 @@
-using Specflow.Extensions.FluentTableAsserter.Asserters;
+using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;
 

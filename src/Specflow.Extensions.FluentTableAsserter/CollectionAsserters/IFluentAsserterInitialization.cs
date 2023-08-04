@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Specflow.Extensions.FluentTableAsserter.Properties;
 
-namespace Specflow.Extensions.FluentTableAsserter.Asserters;
+namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
 public interface IFluentAsserterInitialization<T>
 {
