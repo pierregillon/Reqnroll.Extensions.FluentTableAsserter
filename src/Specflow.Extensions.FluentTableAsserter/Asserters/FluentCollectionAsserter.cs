@@ -8,13 +8,13 @@ using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Asserters;
 
-public class FluentAsserter<T> : IFluentAsserter<T>
+public class FluentCollectionAsserter<T> : IFluentAsserter<T>
 {
     private readonly Table _table;
     private readonly IEnumerable<T> _actualValues;
-    private readonly PropertyDefinitions<T> _propertyDefinitions = new();
+    private readonly CollectionPropertyDefinitions<T> _collectionPropertyDefinitions = new();
 
-    internal FluentAsserter(Table table, IEnumerable<T> actualValues)
+    internal FluentCollectionAsserter(Table table, IEnumerable<T> actualValues)
     {
         _table = table;
         _actualValues = actualValues;
@@ -29,14 +29,14 @@ public class FluentAsserter<T> : IFluentAsserter<T>
             ? configure(PropertyConfiguration<T, TProperty>.Default)
             : PropertyConfiguration<T, TProperty>.Default;
 
-        _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, configuration));
+        _collectionPropertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, configuration));
 
         return this;
     }
 
     public IFluentAsserter<T> IgnoringColumn(string columnName)
     {
-        _propertyDefinitions.AddIgnoredColumnName(columnName);
+        _collectionPropertyDefinitions.AddIgnoredColumnName(columnName);
         return this;
     }
 
@@ -44,7 +44,7 @@ public class FluentAsserter<T> : IFluentAsserter<T>
 
     public void Assert()
     {
-        _propertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
+        _collectionPropertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
 
         if (_table.RowCount != _actualValues.Count())
         {
@@ -59,7 +59,7 @@ public class FluentAsserter<T> : IFluentAsserter<T>
 
             foreach (var columnName in _table.Header)
             {
-                var propertyDefinitions = _propertyDefinitions.ForColumn(columnName);
+                var propertyDefinitions = _collectionPropertyDefinitions.ForColumn(columnName);
 
                 foreach (var propertyDefinition in propertyDefinitions)
                 {
@@ -69,7 +69,7 @@ public class FluentAsserter<T> : IFluentAsserter<T>
 
                     if (!result.IsSuccess)
                     {
-                        throw new ExpectedTableNotEquivalentToDataException(
+                        throw new ExpectedTableNotEquivalentToCollectionItemException(
                             rowIndex,
                             result.MemberName,
                             result.StringActualValue,

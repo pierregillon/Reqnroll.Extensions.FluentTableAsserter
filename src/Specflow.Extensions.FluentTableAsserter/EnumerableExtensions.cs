@@ -17,6 +17,6 @@ public static class EnumerableExtensions
             throw new ArgumentNullException(nameof(actualElements));
         }
 
-        return new FluentAsserter<TElement>(table, actualElements);
+        return new FluentCollectionAsserter<TElement>(table, actualElements);
     }
 }

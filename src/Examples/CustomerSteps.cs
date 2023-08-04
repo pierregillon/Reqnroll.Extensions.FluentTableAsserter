@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Specflow.Extensions.FluentTableAsserter;
 using TechTalk.SpecFlow;
 
@@ -7,11 +6,10 @@ namespace Examples;
 [Binding]
 public class CustomerSteps
 {
-    private readonly ScenarioInfo _scenarioInfo;
+    private readonly ErrorDriver _errorDriver;
     private readonly List<Customer> _customers = new();
-    private Exception? _error;
 
-    public CustomerSteps(ScenarioInfo scenarioInfo) => _scenarioInfo = scenarioInfo;
+    public CustomerSteps(ErrorDriver errorDriver) => _errorDriver = errorDriver;
 
     [When(@"I register a (.*) customer ""(.*)"" with email address ""(.*)""")]
     public void WhenIRegisterTheCustomerWithEmailAddress(Job job, string name, string emailAddress) =>
@@ -19,31 +17,8 @@ public class CustomerSteps
 
     [When(@"asserting the customer list with")]
     [Then(@"the customer list is")]
-    public void ThenTheCustomerListIs(Table table)
-    {
-        if (!_scenarioInfo.Tags.Contains("ErrorHandling"))
-        {
-            AssertTableValid(table);
-            return;
-        }
-
-        try
-        {
-            AssertTableValid(table);
-            throw new InvalidOperationException("Specflow: error should have occurred");
-        }
-        catch (Exception e)
-        {
-            _error = e;
-        }
-    }
-
-    [Then(@"an error occurred with ""(.*)""")]
-    public void ThenAnErrorOccurredWith(string errorMessage)
-    {
-        _error.Should().NotBeNull($"An error was expected to occurred with message '{errorMessage}'.");
-        _error!.Message.Should().Be(errorMessage);
-    }
+    public void ThenTheCustomerListIs(Table table) =>
+        _errorDriver.TryExecute(() => AssertTableValid(table));
 
     private void AssertTableValid(Table table) => _customers
         .ShouldBeEquivalentToTable(table)

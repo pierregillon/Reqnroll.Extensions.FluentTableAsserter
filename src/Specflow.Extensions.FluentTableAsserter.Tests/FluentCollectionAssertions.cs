@@ -1,10 +1,42 @@
+using System.Collections.Immutable;
 using FluentAssertions;
 using Specflow.Extensions.FluentTableAsserter.Exceptions;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
 
-public abstract class TableAssertions
+public abstract class FluentObjectAssertions
+{
+    public class InstanciatingAssertion
+    {
+        private readonly Table _someTable = new("test");
+
+        public static IEnumerable<object?[]> Collections()
+        {
+            yield return new object[] { new List<int>() };
+            yield return new object[] { Array.Empty<int>() };
+            yield return new object[] { new HashSet<int>() };
+            yield return new object[] { new ImmutableArray<int>() };
+        }
+
+        [Theory]
+        [MemberData(nameof(Collections))]
+        public void Fails_when_source_is_a_collection(IEnumerable<int> collection)
+        {
+            Action action = () => collection.InstanceShouldBeEquivalentToTable(_someTable);
+
+            action
+                .Should()
+                .Throw<InstanceToAssertCannotBeACollectionException>()
+                .WithMessage(
+                    $"You cannot call '{nameof(ObjectExtensions.InstanceShouldBeEquivalentToTable)}' with a collection. "
+                    + $"Make sure it is a simple object or use '{nameof(EnumerableExtensions.ShouldBeEquivalentToTable)}' to assert your collection of items."
+                );
+        }
+    }
+}
+
+public abstract class FluentCollectionAssertions
 {
     public class InstanciatingAssertion
     {
@@ -264,7 +296,7 @@ public class UserCode
 
             _assertion
                 .Should()
-                .Throw<ExpectedTableNotEquivalentToDataException>()
+                .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
                 .WithMessage(
                     "At index 0, 'FirstName' actual data is 'Jonathan' but should be 'John' from column 'FirstName'."
                 );
@@ -482,7 +514,7 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<ExpectedTableNotEquivalentToDataException>()
+                .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
                 .WithMessage(
                     "At index 0, 'Names' actual data is 'sam, john, eric' but should be 'john, sam, eric' from column 'Names'."
                 );
@@ -508,7 +540,7 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<ExpectedTableNotEquivalentToDataException>()
+                .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
                 .WithMessage(
                     "At index 0, 'Names' actual data is 'john, sam, eric' but should be 'john, sam' from column 'Names'."
                 );

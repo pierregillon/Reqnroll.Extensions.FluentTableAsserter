@@ -2,9 +2,9 @@ using System;
 
 namespace Specflow.Extensions.FluentTableAsserter.Exceptions;
 
-public class ExpectedTableNotEquivalentToDataException : Exception
+public class ExpectedTableNotEquivalentToCollectionItemException : Exception
 {
-    public ExpectedTableNotEquivalentToDataException(
+    public ExpectedTableNotEquivalentToCollectionItemException(
         int index,
         string memberName,
         object? actualValue,

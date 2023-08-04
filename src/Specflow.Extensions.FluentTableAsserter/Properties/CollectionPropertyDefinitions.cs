@@ -4,7 +4,7 @@ using Specflow.Extensions.FluentTableAsserter.Exceptions;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
-internal class PropertyDefinitions<T>
+internal class CollectionPropertyDefinitions<T>
 {
     private readonly List<string> _ignoredColumns = new();
     private readonly List<IPropertyDefinition<T>> _propertyDefinitions = new();
