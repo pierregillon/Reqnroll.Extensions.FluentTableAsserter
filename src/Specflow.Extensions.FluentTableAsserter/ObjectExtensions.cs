@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
+using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter;
@@ -16,13 +15,12 @@ public static class ObjectExtensions
     {
         if (actualElement == null)
         {
-            throw new ArgumentNullException(nameof(actualElement));
+            throw new ArgumentNullException(nameof(actualElement), "Provided object cannot be null.");
         }
 
-        if (actualElement.GetType().GetInterfaces()
-            .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+        if (actualElement.GetType().IsEnumerableType())
         {
-            throw new InstanceToAssertCannotBeACollectionException();
+            throw new ObjectToAssertCannotBeACollectionException();
         }
 
         return new SingleObjectAsserter<TElement>(table, actualElement);

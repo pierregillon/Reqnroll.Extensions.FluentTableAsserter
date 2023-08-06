@@ -159,8 +159,3 @@ public record PropertyDefinition<T, TProperty>(
 
     public override string ToString() => $"{typeof(T).Name}.{_propertyName} -> [{ColumnOrMemberName}]";
 }
-
-public static class TypeExtensions
-{
-    public static bool IsEnumerableType(this Type type) => type.GetInterface(nameof(IEnumerable)) != null;
-}

@@ -2,9 +2,9 @@ using System;
 
 namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
 
-public class ExpectedTableNotEquivalentToInstanceException : Exception
+public class ExpectedTableNotEquivalentToObjectException : Exception
 {
-    public ExpectedTableNotEquivalentToInstanceException(
+    public ExpectedTableNotEquivalentToObjectException(
         string memberName,
         object? actualValue,
         string columnName,

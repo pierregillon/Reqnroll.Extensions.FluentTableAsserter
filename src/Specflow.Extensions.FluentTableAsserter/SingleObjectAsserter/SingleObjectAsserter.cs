@@ -73,7 +73,7 @@ public class SingleObjectAsserter<TElement> : IFluentAsserter<TElement>
 
                 if (!result.IsSuccess)
                 {
-                    throw new ExpectedTableNotEquivalentToInstanceException(
+                    throw new ExpectedTableNotEquivalentToObjectException(
                         result.MemberName,
                         result.StringActualValue,
                         fieldName,
