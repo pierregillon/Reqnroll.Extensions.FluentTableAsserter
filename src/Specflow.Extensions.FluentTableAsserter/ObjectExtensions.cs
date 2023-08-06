@@ -7,7 +7,7 @@ namespace Specflow.Extensions.FluentTableAsserter;
 
 public static class ObjectExtensions
 {
-    public static ISingleObjectFluentAsserterInitialization<TElement> InstanceShouldBeEquivalentToTable<TElement>(
+    public static ISingleObjectFluentAsserterInitialization<TElement> ObjectShouldBeEquivalentToTable<TElement>(
         this TElement actualElement,
         Table table
     ) where TElement : notnull

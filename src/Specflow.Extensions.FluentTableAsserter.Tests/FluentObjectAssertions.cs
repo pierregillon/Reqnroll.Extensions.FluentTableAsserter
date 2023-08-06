@@ -25,14 +25,14 @@ public abstract class FluentObjectAssertions
         [MemberData(nameof(Collections))]
         public void Fails_when_source_is_a_collection(IEnumerable<int> collection)
         {
-            Action action = () => collection.InstanceShouldBeEquivalentToTable(SomeTable);
+            Action action = () => collection.ObjectShouldBeEquivalentToTable(SomeTable);
 
             action
                 .Should()
                 .Throw<ObjectToAssertCannotBeACollectionException>()
                 .WithMessage(
-                    $"You cannot call '{nameof(ObjectExtensions.InstanceShouldBeEquivalentToTable)}' with a collection. "
-                    + $"Make sure it is a simple object or use '{nameof(EnumerableExtensions.ShouldBeEquivalentToTable)}' to assert your collection of items."
+                    $"You cannot call '{nameof(ObjectExtensions.ObjectShouldBeEquivalentToTable)}' with a collection. "
+                    + $"Make sure it is a simple object or use '{nameof(EnumerableExtensions.CollectionShouldBeEquivalentToTable)}' to assert your collection of items."
                 );
         }
 
@@ -51,7 +51,7 @@ public class UserCode
     public static void Execute()
     {
         new Person()
-            .InstanceShouldBeEquivalentToTable(new Table(""some header""))
+            .ObjectShouldBeEquivalentToTable(new Table(""some header""))
             .Assert();
     }
 
@@ -76,7 +76,7 @@ public class UserCode
         {
             Person person = null!;
 
-            var wrongAction = () => person.InstanceShouldBeEquivalentToTable(SomeTable);
+            var wrongAction = () => person.ObjectShouldBeEquivalentToTable(SomeTable);
 
             wrongAction
                 .Should()
@@ -98,7 +98,7 @@ public class UserCode
             var table = BuildTable(new FieldValue("Test", SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .Assert();
 
@@ -114,7 +114,7 @@ public class UserCode
             var table = BuildTable(new FieldValue("Test", SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .IgnoringField("Test")
                 .Assert();
@@ -130,7 +130,7 @@ public class UserCode
             var table = BuildTable(new FieldValue("FirstName", SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName)
                 .Assert();
@@ -150,7 +150,7 @@ public class UserCode
             var table = BuildTable(new FieldValue("FirstName", SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName, options => options.ComparedToField(fieldName))
                 .Assert();
@@ -166,7 +166,7 @@ public class UserCode
             var table = BuildTable(new FieldValue("FirstName", SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName, options => options.ComparedToField("FirstName2"))
                 .Assert();
@@ -187,7 +187,7 @@ public class UserCode
             var table = BuildTable(new FieldValue(header, SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .Assert();
 
@@ -207,7 +207,7 @@ public class UserCode
             var table = BuildTable(new FieldValue(header, SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options.ComparedToField("MyFirstName"))
                 .Assert();
 
@@ -227,7 +227,7 @@ public class UserCode
             );
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .Assert();
 
@@ -245,7 +245,7 @@ public class UserCode
             var table = BuildTable(new FieldValue("Name", SomePerson.FirstName));
 
             var action = () => SomePerson
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options
                     .ComparedToField("Name"))
                 .WithProperty(x => x.LastName, options => options
@@ -271,7 +271,7 @@ public class UserCode
         {
             _expectedTable = new Table("Field", "Value");
             _assertion = () => _actualPerson!
-                .InstanceShouldBeEquivalentToTable(_expectedTable)
+                .ObjectShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.LastName)
                 .Assert();
@@ -296,7 +296,7 @@ public class UserCode
             _actualPerson = new Person("John", "Doe");
 
             var action = () => _actualPerson
-                .InstanceShouldBeEquivalentToTable(_expectedTable)
+                .ObjectShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.LastName)
                 .WithProperty(x => x.FirstName)
                 .Assert();
@@ -344,7 +344,7 @@ public class UserCode
             _actualPerson = new Person("John", "John");
 
             var action = () => _actualPerson
-                .InstanceShouldBeEquivalentToTable(_expectedTable)
+                .ObjectShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(
                     x => x.FirstName,
                     o => o.ComparedToField("FirstName")
@@ -377,7 +377,7 @@ public class UserCode
             var temperature = new Temperature(100, TemperatureType.Celsius);
 
             var action = () => temperature
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Value)
                 .IgnoringField("Type")
                 .Assert();
@@ -399,7 +399,7 @@ public class UserCode
             var temperature = new Temperature(100, TemperatureType.Celsius);
 
             var action = () => temperature
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Value, options => options
                     .WithFieldValueConversion(columnValue => columnValue == "hundred" ? 100 : -1))
                 .IgnoringField("Type")
@@ -421,7 +421,7 @@ public class UserCode
             var temperature = new Temperature(100, TemperatureType.Kelvin);
 
             var action = () => temperature
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
                 .Assert();
@@ -444,7 +444,7 @@ public class UserCode
             var temperature = new Temperature(100, TemperatureType.SomeOtherValue);
 
             var action = () => temperature
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
                 .Assert();
@@ -465,7 +465,7 @@ public class UserCode
             var temperature = new Temperature(100, TemperatureType.Kelvin);
 
             var action = () => temperature
-                .InstanceShouldBeEquivalentToTable(table)
+                .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
                 .Assert();
@@ -496,7 +496,7 @@ public class UserCode
             var element = new Details(new[] { "john", "sam", "eric" });
 
             element
-                .InstanceShouldBeEquivalentToTable(_table)
+                .ObjectShouldBeEquivalentToTable(_table)
                 .WithProperty(x => x.Names, o => o
                     .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
                 )
@@ -509,7 +509,7 @@ public class UserCode
             var element = new Details(new[] { "sam", "john", "eric" });
 
             var action = () => element
-                .InstanceShouldBeEquivalentToTable(_table)
+                .ObjectShouldBeEquivalentToTable(_table)
                 .WithProperty(x => x.Names, o => o
                     .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
                 )
@@ -529,7 +529,7 @@ public class UserCode
             var element = new Details(new[] { "sam", "john" });
 
             var action = () => element
-                .InstanceShouldBeEquivalentToTable(_table)
+                .ObjectShouldBeEquivalentToTable(_table)
                 .WithProperty(x => x.Names, o => o
                     .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
                 )

@@ -27,7 +27,7 @@ public class UserCode
     public static void Execute()
     {
         new List<Person>()
-            .ShouldBeEquivalentToTable(new Table(""some header""))
+            .CollectionShouldBeEquivalentToTable(new Table(""some header""))
             .Assert();
     }
 
@@ -52,7 +52,7 @@ public class UserCode
         {
             List<Person> persons = null!;
 
-            var wrongAction = () => persons.ShouldBeEquivalentToTable(SomeTable);
+            var wrongAction = () => persons.CollectionShouldBeEquivalentToTable(SomeTable);
 
             wrongAction
                 .Should()
@@ -74,7 +74,7 @@ public class UserCode
             var table = new Table("Test");
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .Assert();
 
@@ -90,7 +90,7 @@ public class UserCode
             var table = new Table("FirstName", "Test");
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .IgnoringColumn("Test")
                 .Assert();
@@ -106,7 +106,7 @@ public class UserCode
             var table = new Table("FirstName");
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName)
                 .Assert();
@@ -125,7 +125,7 @@ public class UserCode
             var table = new Table("FirstName");
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName, options => options.ComparedToColumn(headerVariation))
                 .Assert();
@@ -141,7 +141,7 @@ public class UserCode
             var table = new Table("FirstName", "FirstName2");
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.FirstName, options => options.ComparedToColumn("FirstName2"))
                 .Assert();
@@ -162,7 +162,7 @@ public class UserCode
             var table = new Table(header);
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .Assert();
 
@@ -182,7 +182,7 @@ public class UserCode
             var table = new Table(header);
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options
                     .ComparedToColumn("MyFirstName"))
                 .Assert();
@@ -201,7 +201,7 @@ public class UserCode
             var table = new Table(firstColumn, secondColumn);
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName)
                 .Assert();
 
@@ -219,7 +219,7 @@ public class UserCode
             var table = new Table("Name");
 
             var action = () => EmptyPersonList
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.FirstName, options => options.ComparedToColumn("Name"))
                 .WithProperty(x => x.LastName, options => options.ComparedToColumn("Name"))
                 .Assert();
@@ -243,7 +243,7 @@ public class UserCode
         {
             _expectedTable = new Table("FirstName", "LastName");
             _assertion = () => _actualPersons
-                .ShouldBeEquivalentToTable(_expectedTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.FirstName)
                 .WithProperty(x => x.LastName)
                 .Assert();
@@ -266,7 +266,7 @@ public class UserCode
             _actualPersons.Add(new Person("John", "Doe"));
 
             var action = () => _actualPersons
-                .ShouldBeEquivalentToTable(_expectedTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.LastName)
                 .WithProperty(x => x.FirstName)
                 .Assert();
@@ -337,7 +337,7 @@ public class UserCode
             _actualPersons.Add(new Person("Jonathan", "Jonathan"));
 
             var action = () => _actualPersons
-                .ShouldBeEquivalentToTable(_expectedTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTable)
                 .WithProperty(x => x.FirstName, options => options
                     .ComparedToColumn("FirstName"))
                 .WithProperty(x => x.LastName, options => options
@@ -371,7 +371,7 @@ public class UserCode
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Celsius));
 
             var action = () => _actualTemperatures
-                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .IgnoringColumn("Type")
                 .Assert();
@@ -389,7 +389,7 @@ public class UserCode
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Celsius));
 
             var action = () => _actualTemperatures
-                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value, options => options
                     .WithColumnValueConversion(columnValue => columnValue == "hundred" ? 100 : -1))
                 .IgnoringColumn("Type")
@@ -407,7 +407,7 @@ public class UserCode
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Kelvin));
 
             var action = () => _actualTemperatures
-                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
                 .Assert();
@@ -426,7 +426,7 @@ public class UserCode
             _actualTemperatures.Add(new Temperature(100, TemperatureType.SomeOtherValue));
 
             var action = () => _actualTemperatures
-                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
                 .Assert();
@@ -443,7 +443,7 @@ public class UserCode
             _actualTemperatures.Add(new Temperature(100, TemperatureType.Kelvin));
 
             var action = () => _actualTemperatures
-                .ShouldBeEquivalentToTable(_expectedTemperatureTable)
+                .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value)
                 .WithProperty(x => x.Type)
                 .Assert();
@@ -478,7 +478,7 @@ public class UserCode
             };
 
             elements
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Names, o => o
                     .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
                 )
@@ -497,7 +497,7 @@ public class UserCode
             };
 
             var action = () => elements
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Names, o => o
                     .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
                 )
@@ -523,7 +523,7 @@ public class UserCode
             };
 
             var action = () => elements
-                .ShouldBeEquivalentToTable(table)
+                .CollectionShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Names, o => o
                     .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
                 )

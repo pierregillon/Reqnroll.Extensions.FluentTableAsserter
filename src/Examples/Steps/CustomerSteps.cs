@@ -21,7 +21,7 @@ public class CustomerSteps
         _errorDriver.TryExecute(() => AssertTableValid(table));
 
     private void AssertTableValid(Table table) => _customers
-        .ShouldBeEquivalentToTable(table)
+        .CollectionShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FullName)
         .WithProperty(x => x.FullName, o => o.ComparedToColumn("Name"))
         .WithProperty(x => x.EmailAddress)

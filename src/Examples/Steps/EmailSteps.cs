@@ -31,7 +31,7 @@ public class EmailSteps
         _errorDriver.TryExecute(() => AssertTableValid(table));
 
     private void AssertTableValid(Table table) => _receivedEmail!
-        .InstanceShouldBeEquivalentToTable(table)
+        .ObjectShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FromEmail)
         .WithProperty(x => x.FromEmail, x => x.ComparedToField("From"))
         .WithProperty(x => x.ToEmail)

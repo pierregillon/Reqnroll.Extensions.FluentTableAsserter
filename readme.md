@@ -48,7 +48,7 @@ With the assertion code:
 [Then(@"the customer list is")]
 public void ThenTheCustomerListIs(Table table) => 
     _customers
-        .ShouldBeEquivalentToTable(table)
+        .CollectionShouldBeEquivalentToTable(table)
         .WithProperty(x => x.Name)
         .WithProperty(x => x.EmailAddress)
         .WithProperty(x => x.Job)
@@ -79,7 +79,6 @@ public enum Job
 }
 ```
 
-
 You can find more example [here](./src/Examples).
 
 ## Example: object comparison
@@ -108,7 +107,7 @@ With the assertion code:
 [Then(@"the received email is")]
 public void WhenAssertingTheEmailPropertiesWith(Table table) => 
     _receivedEmail
-        .InstanceShouldBeEquivalentToTable(table)
+        .ObjectShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FromEmail)
         .WithProperty(x => x.ToEmail)
         .WithProperty(x => x.Subject)
@@ -128,6 +127,7 @@ var email = new Email(
     3
 );
 ```
+
 ```csharp
 internal record Email(
     string FromEmail,
@@ -173,7 +173,8 @@ It is useful when your gherkin language is different than english but your class
 
 > 💡 Remember in **DDD guidelines**, a strong objective is to share the **same language across the team / company**, from
 > domain
-> experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a **customer**
+> experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a *
+*customer**
 > has a **full name**
 > instead of a **name**, it is preferable to rename the property `Name` into `FullName` instead of overriding the mapped
 > column.
