@@ -25,37 +25,45 @@ The idea to this library is:
 - can be extended with **extra configuration**
 - avoid creating `record` or `class` for every single table to rehydrate
 - tend to be **ubiquitous language centric** (clever string parsing from *human readable* input)
-- make column declaration **optional** in gherkin, in order to declare only the columns that are
-- relevant for a scenario
+- make column declaration **optional** in gherkin, in order to declare only the columns that are relevant for a scenario
 
-## Examples
+## Example: collection comparison
 
-For the following scenario:
+You can compare a collection with a table.
+Headers represent the property names and rows represent the values of the items.
+
+For example, you can write the gherkin assertion:
 
 ```gherkin
 Scenario: List all registered customers
-    When I register a scientist customer "John Doe" with email address "john.doe@gmail.com"
-    And I register a chief product officer customer "Sam Smith" with email address "sam.smith@gmail.com"
     Then the customer list is
       | Name      | Email address       | Job                   |
       | John Doe  | john.doe@gmail.com  | Scientist             |
       | Sam Smith | sam.smith@gmail.com | Chief product officer |
 ```
 
-You can write the following assertion:
+With the assertion code:
 
 ```csharp
 [Then(@"the customer list is")]
-    public void ThenTheCustomerListIs(Table table)
-        => _customers
-            .ShouldBeEquivalentToTable(table)
-            .WithProperty(x => x.Name)
-            .WithProperty(x => x.EmailAddress)
-            .WithProperty(x => x.Job)
-            .Assert();
+public void ThenTheCustomerListIs(Table table) => 
+    _customers
+        .ShouldBeEquivalentToTable(table)
+        .WithProperty(x => x.Name)
+        .WithProperty(x => x.EmailAddress)
+        .WithProperty(x => x.Job)
+        .Assert();
 ```
 
-Where, for the example, `Customer` is:
+When the collection is:
+
+```csharp
+var customers = new[]
+{
+    new Customer("John Doe", "john.doe@gmail.com", Job.Scientist),
+    new Customer("Sam Smith", "sam.smith@gmail.com", Job.ChiefProductOfficer)
+};
+```
 
 ```csharp
 internal record Customer(
@@ -71,6 +79,65 @@ public enum Job
 }
 ```
 
+
+You can find more example [here](./src/Examples).
+
+## Example: object comparison
+
+You can also compare a **single object** with a Specflow Table.
+The first column should represent the field names, and the second column the values.
+
+For example, you can write the gherkin assertion:
+
+```gherkin
+Scenario: Show email details
+    Then the received email is
+      | Field           | Value                             |
+      | From email      | sender@company.com                |
+      | To email        | receiver@company.com              |
+      | Subject         | Provide schedule                  |
+      | Plain text      | Hi,                               |
+      | Plain text      | Can you provide me your schedule? |
+      | Plain text      | Thanks.                           |
+      | AttachmentCount | 3                                 |
+```
+
+With the assertion code:
+
+```csharp
+[Then(@"the received email is")]
+public void WhenAssertingTheEmailPropertiesWith(Table table) => 
+    _receivedEmail
+        .InstanceShouldBeEquivalentToTable(table)
+        .WithProperty(x => x.FromEmail)
+        .WithProperty(x => x.ToEmail)
+        .WithProperty(x => x.Subject)
+        .WithProperty(x => x.PlainText)
+        .WithProperty(x => x.AttachmentCount)
+        .Assert();
+```
+
+When the object is:
+
+```csharp
+var email = new Email(
+    "sender@company.com",
+    "receiver@company.com",
+    "Provide schedule",
+    "Hi,\nCan you provide me your schedule?\nThanks.",
+    3
+);
+```
+```csharp
+internal record Email(
+    string FromEmail,
+    string ToEmail,
+    string Subject,
+    string PlainText,
+    int AttachmentCount
+);
+```
+
 You can find more example [here](./src/Examples).
 
 ## Mapping between columns and properties
@@ -78,8 +145,13 @@ You can find more example [here](./src/Examples).
 The table asserter is **smart** 🤓 and try to determine column name of the table, based on
 the **mapped property names**.
 
-`EmailAddress` property is automatically mapped to `EmailAddress` column or to more readable
-set of words, like `Email address` or `email address`.
+`EmailAddress` field => `EmailAddress` column
+
+Or to more readable set of words:
+
+`EmailAddress` field => `Email address` column
+
+`EmailAddress` field => `email address` column
 
 The same principle is applied for parsing enum values : `ChiefProductOfficer` value works
 but also `Chief product officer`.
@@ -164,9 +236,9 @@ Scenario: Deleted customers are not listed anymore
 ## Remaining tasks
 
 - [x] natively handle enumeration without converter
+- [x] handle single object assertion (instead of list)
 - [ ] protect if no column match any property defined
-- [ ] handle single object assertion (instead of list)
-- [ ] add more examples
+- [x] add more examples
 - [ ] reversed converter from value to column value
 - [ ] Provide default list comparison delegate converter
 - [ ] handle enum flags
