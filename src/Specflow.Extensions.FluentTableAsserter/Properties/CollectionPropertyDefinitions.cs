@@ -23,8 +23,20 @@ internal class CollectionPropertyDefinitions<T>
 
     public void EnsureColumnAreCorrectlyMapped(IEnumerable<string> headers)
     {
-        var notMappedHeaders = headers
+        var validHeaders = headers
             .Where(header => !_ignoredColumns.Contains(header))
+            .ToArray();
+
+        EnsureNoMissingColumns(validHeaders);
+        EnsureNoDuplicates(validHeaders);
+    }
+
+    public IEnumerable<IPropertyDefinition<T>> ForColumn(string headerName) =>
+        _propertyDefinitions.Where(x => x.IsMappedTo(headerName));
+
+    private void EnsureNoMissingColumns(IEnumerable<string> validHeaders)
+    {
+        var notMappedHeaders = validHeaders
             .Where(header => !_propertyDefinitions.Any(p => p.IsMappedTo(header)))
             .ToArray();
 
@@ -34,6 +46,22 @@ internal class CollectionPropertyDefinitions<T>
         }
     }
 
-    public IEnumerable<IPropertyDefinition<T>> ForColumn(string headerName) =>
-        _propertyDefinitions.Where(x => x.IsMappedTo(headerName));
+    private void EnsureNoDuplicates(IEnumerable<string> validHeaders)
+    {
+        var headersGroupedByNormalizedForm = validHeaders
+            .GroupBy(x => x.FromHumanReadableToNormalized())
+            .Where(x => x.Count() >= 2)
+            .Select(x => new
+            {
+                _propertyDefinitions.First().PropertyName,
+                DuplicatedColumns = x.ToArray()
+            })
+            .ToArray();
+
+        if (headersGroupedByNormalizedForm.Any())
+        {
+            var first = headersGroupedByNormalizedForm.First();
+            throw new DuplicateColumnDefinitionException(typeof(T), first.DuplicatedColumns, first.PropertyName);
+        }
+    }
 }

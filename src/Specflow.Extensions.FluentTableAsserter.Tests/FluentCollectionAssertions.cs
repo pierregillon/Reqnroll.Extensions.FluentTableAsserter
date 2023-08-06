@@ -191,6 +191,27 @@ public class UserCode
                 .NotThrow();
         }
 
+        [Theory]
+        [InlineData("FirstName", "FirstName")]
+        [InlineData("FirstName", "First name")]
+        [InlineData("First name", "FirstName")]
+        public void Fails_when_multiple_columns_with_same_name(string firstColumn, string secondColumn)
+        {
+            var table = new Table(firstColumn, secondColumn);
+
+            var action = () => EmptyPersonList
+                .ShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.FirstName)
+                .Assert();
+
+            action
+                .Should()
+                .Throw<DuplicateColumnDefinitionException>()
+                .WithMessage(
+                    $"Columns {firstColumn}, {secondColumn} are duplicates: they match the same property definition 'FirstName' of class 'Person'."
+                );
+        }
+
         [Fact]
         public void Accepts_multiple_property_mapping_to_the_same_column()
         {

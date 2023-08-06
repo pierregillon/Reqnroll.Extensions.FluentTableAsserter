@@ -10,11 +10,11 @@ namespace Specflow.Extensions.FluentTableAsserter;
 internal static class HumanReadableExtensions
 {
     public static bool EqualsHumanReadable(this string input1, string input2) =>
-        FromHumanReadableToNormalized(input1) == FromHumanReadableToNormalized(input2);
+        input1.FromHumanReadableToNormalized() == input2.FromHumanReadableToNormalized();
 
     public static bool TryParseEnum(Type enumType, string humanReadableString, out object result)
     {
-        var normalized = FromHumanReadableToNormalized(humanReadableString);
+        var normalized = humanReadableString.FromHumanReadableToNormalized();
         var isEnumFlag = enumType.GetCustomAttribute(typeof(FlagsAttribute)) != null;
 
         if (!string.IsNullOrEmpty(normalized) || !isEnumFlag)
@@ -28,11 +28,14 @@ internal static class HumanReadableExtensions
         return true;
     }
 
-    private static string FromHumanReadableToNormalized(string humanizedString) =>
+    public static string FromHumanReadableToNormalized(this string humanizedString) =>
         string.IsNullOrWhiteSpace(humanizedString)
             ? string.Empty
-            : Regex.Replace(humanizedString.RemoveDiacritics()
-                .ToLowerInvariant(), "[^a-z0-9,]+", "");
+            : Regex.Replace(
+                humanizedString.RemoveDiacritics().ToLowerInvariant(),
+                "[^a-z0-9,]+",
+                string.Empty
+            );
 
     private static string RemoveDiacritics(this string text)
     {

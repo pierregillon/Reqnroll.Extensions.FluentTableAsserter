@@ -12,10 +12,10 @@ public record PropertyDefinition<T, TProperty>(
     PropertyConfiguration<T, TProperty> Configuration
 ) : IPropertyDefinition<T>
 {
-    private readonly string _propertyName = FindPropertyName(Expression);
+    public string PropertyName { get; } = FindPropertyName(Expression);
     private readonly Func<T, TProperty> _getPropertyValue = Expression.Compile();
 
-    private string ColumnOrMemberName => Configuration.ColumnName ?? _propertyName;
+    private string ColumnName => Configuration.ColumnName ?? PropertyName;
 
     public AssertionResult AssertEquivalent(string stringExpectedValue, T data)
     {
@@ -40,7 +40,7 @@ public record PropertyDefinition<T, TProperty>(
 
         if (expectedValue is null || actualValue is null)
         {
-            return AssertionResult.Fail(_propertyName, actualValue);
+            return AssertionResult.Fail(PropertyName, actualValue);
         }
 
         if (typeof(TProperty).IsEnumerableType())
@@ -53,14 +53,14 @@ public record PropertyDefinition<T, TProperty>(
 
             if (actualArray.Length != expectedArray.Length)
             {
-                return AssertionResult.Fail(_propertyName, actualValue);
+                return AssertionResult.Fail(PropertyName, actualValue);
             }
 
             foreach (var value in actualArray.Zip(expectedArray, (x, y) => (x, y)))
             {
                 if (!Equals(value.x, value.y))
                 {
-                    return AssertionResult.Fail(_propertyName, actualValue);
+                    return AssertionResult.Fail(PropertyName, actualValue);
                 }
             }
 
@@ -72,7 +72,7 @@ public record PropertyDefinition<T, TProperty>(
             return AssertionResult.Success;
         }
 
-        return AssertionResult.Fail(_propertyName, actualValue);
+        return AssertionResult.Fail(PropertyName, actualValue);
     }
 
     private TProperty ConvertToPropertyType(string stringExpectedValue)
@@ -100,7 +100,7 @@ public record PropertyDefinition<T, TProperty>(
         {
             throw new CannotConvertColumnValueToPropertyTypeException(
                 stringExpectedValue,
-                _propertyName,
+                PropertyName,
                 typeof(TProperty),
                 typeof(T),
                 ex
@@ -108,7 +108,7 @@ public record PropertyDefinition<T, TProperty>(
         }
     }
 
-    public bool IsMappedTo(string columnName) => ColumnOrMemberName.EqualsHumanReadable(columnName);
+    public bool IsMappedTo(string columnName) => ColumnName.EqualsHumanReadable(columnName);
 
     private static string FindPropertyName(Expression expression)
     {
@@ -152,10 +152,10 @@ public record PropertyDefinition<T, TProperty>(
         }
 
         return Expression.ToString().Equals(other.Expression.ToString())
-            && ColumnOrMemberName.EqualsHumanReadable(other.ColumnOrMemberName);
+            && ColumnName.EqualsHumanReadable(other.ColumnName);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Expression.ToString(), ColumnOrMemberName);
+    public override int GetHashCode() => HashCode.Combine(Expression.ToString(), ColumnName);
 
-    public override string ToString() => $"{typeof(T).Name}.{_propertyName} -> [{ColumnOrMemberName}]";
+    public override string ToString() => $"{typeof(T).Name}.{PropertyName} -> [{ColumnName}]";
 }
