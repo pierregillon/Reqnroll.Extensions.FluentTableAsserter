@@ -45,7 +45,7 @@ Scenario: Assertion fails using an unknown column that has not been mapped
       | Full name | Birth date |
       | John Doe  | 1989-10-02 |
       | Sam Smith | 1999-11-01 |
-    Then an error occurred with "The column 'Birth date' has not been mapped to any property of class 'Customer'."
+    Then an error occurred with "Column or field 'Birth date' has not been mapped to any property of class 'Customer'."
 
 @ErrorHandling
 Scenario: Assertion fails when order is different

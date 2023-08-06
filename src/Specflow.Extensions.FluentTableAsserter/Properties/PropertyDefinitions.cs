@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
-using Specflow.Extensions.FluentTableAsserter.Properties;
+using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 
-namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
+namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
-internal class SingleObjectPropertyDefinitions<T>
+internal class PropertyDefinitions<T>
 {
     private readonly List<string> _ignoredColumns = new();
     private readonly List<IPropertyDefinition<T>> _propertyDefinitions = new();
@@ -22,9 +22,9 @@ internal class SingleObjectPropertyDefinitions<T>
 
     public void AddIgnoredColumnName(string columnName) => _ignoredColumns.Add(columnName);
 
-    public void EnsureColumnAreCorrectlyMapped(IEnumerable<string> fieldNames)
+    public void EnsureColumnAreCorrectlyMapped(IEnumerable<string> headers)
     {
-        var validHeaders = fieldNames
+        var validHeaders = headers
             .Where(header => !_ignoredColumns.Contains(header))
             .ToArray();
 
@@ -43,7 +43,7 @@ internal class SingleObjectPropertyDefinitions<T>
 
         if (notMappedHeaders.Any())
         {
-            throw new MissingColumnDefinitionException(typeof(T), notMappedHeaders.First());
+            throw new MissingPropertyDefinitionException(typeof(T), notMappedHeaders.First());
         }
     }
 
@@ -62,7 +62,7 @@ internal class SingleObjectPropertyDefinitions<T>
         if (headersGroupedByNormalizedForm.Any())
         {
             var first = headersGroupedByNormalizedForm.First();
-            throw new DuplicateColumnDefinitionException(typeof(T), first.DuplicatedColumns, first.PropertyName);
+            throw new DuplicateColumnsOrFieldsException(typeof(T), first.DuplicatedColumns, first.PropertyName);
         }
     }
 }

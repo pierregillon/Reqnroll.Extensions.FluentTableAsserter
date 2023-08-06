@@ -12,13 +12,13 @@ Background:
 Scenario: Assertion fails when more than 2 columns
     When asserting the email properties with
       | Field | Value | Origin |
-    Then an error occurred with "You must define strictly 2 columns: first of the field name (ie: Field), second for field value (ie: Value). Column names are flexible."
+    Then an error occurred with "You must define strictly 2 columns: first is the field name (ie: Field), second is the field value (ie: Value). Column names are flexible."
 
 @ErrorHandling
 Scenario: Assertion fails when single column
     When asserting the email properties with
       | Field |
-    Then an error occurred with "You must define strictly 2 columns: first of the field name (ie: Field), second for field value (ie: Value). Column names are flexible."
+    Then an error occurred with "You must define strictly 2 columns: first is the field name (ie: Field), second is the field value (ie: Value). Column names are flexible."
 
 @ErrorHandling
 Scenario: Assertion fails when to properties defined
@@ -32,10 +32,10 @@ Scenario: Assertion fails when some properties are unknown
       | Field | Value |
       | Delay | 1     |
       | Year  | 2023  |
-    Then an error occurred with "The column 'Delay' has not been mapped to any property of class 'Email'."
+    Then an error occurred with "Column or field 'Delay' has not been mapped to any property of class 'Email'."
 
 @ErrorHandling
-Scenario: Assertion fails when value is different as expected
+Scenario: Assertion fails when value is different than expected
     When asserting the email properties with
       | Field     | Value               |
       | FromEmail | sender2@company.com |

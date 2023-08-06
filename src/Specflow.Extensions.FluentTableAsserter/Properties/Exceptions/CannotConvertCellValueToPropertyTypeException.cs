@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 
-internal class CannotConvertColumnValueToPropertyTypeException : Exception
+internal class CannotConvertCellValueToPropertyTypeException : Exception
 {
-    public CannotConvertColumnValueToPropertyTypeException(
+    public CannotConvertCellValueToPropertyTypeException(
         string value,
         string propertyName,
         MemberInfo propertyType,

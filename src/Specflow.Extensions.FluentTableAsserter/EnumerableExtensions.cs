@@ -8,7 +8,7 @@ namespace Specflow.Extensions.FluentTableAsserter;
 
 public static class EnumerableExtensions
 {
-    public static IFluentAsserterInitialization<TElement> ShouldBeEquivalentToTable<TElement>(
+    public static ICollectionFluentAsserterInitialization<TElement> ShouldBeEquivalentToTable<TElement>(
         this IEnumerable<TElement> actualElements,
         Table table
     )
@@ -18,7 +18,7 @@ public static class EnumerableExtensions
             throw new ArgumentNullException(nameof(actualElements));
         }
 
-        return new FluentCollectionAsserter<TElement>(table, actualElements);
+        return new CollectionFluentAsserter<TElement>(table, actualElements);
     }
 
     internal static IEnumerable<object?> Enumerate(this IEnumerable enumerable)

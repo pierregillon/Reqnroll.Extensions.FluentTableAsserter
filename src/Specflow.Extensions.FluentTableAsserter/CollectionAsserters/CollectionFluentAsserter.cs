@@ -8,43 +8,44 @@ using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
-public class FluentCollectionAsserter<T> : IFluentAsserter<T>
+public class CollectionFluentAsserter<T> : ICollectionCollectionFluentAsserter<T>
 {
     private readonly Table _table;
     private readonly IEnumerable<T> _actualValues;
-    private readonly CollectionPropertyDefinitions<T> _collectionPropertyDefinitions = new();
+    private readonly PropertyDefinitions<T> _propertyDefinitions = new();
 
-    internal FluentCollectionAsserter(Table table, IEnumerable<T> actualValues)
+    internal CollectionFluentAsserter(Table table, IEnumerable<T> actualValues)
     {
         _table = table;
         _actualValues = actualValues;
     }
 
-    public IFluentAsserter<T> WithProperty<TProperty>(
+    public ICollectionCollectionFluentAsserter<T> WithProperty<TProperty>(
         Expression<Func<T, TProperty>> propertyExpression,
-        Func<PropertyConfiguration<T, TProperty>, PropertyConfiguration<T, TProperty>>? configure = null
+        Func<ICollectionPropertyConfiguration<T, TProperty>, ICollectionPropertyConfiguration<T, TProperty>>?
+            configure = null
     )
     {
         var configuration = configure is not null
             ? configure(PropertyConfiguration<T, TProperty>.Default)
             : PropertyConfiguration<T, TProperty>.Default;
 
-        _collectionPropertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, configuration));
+        var cast = (PropertyConfiguration<T, TProperty>)configuration;
+
+        _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, cast));
 
         return this;
     }
 
-    public IFluentAsserter<T> IgnoringColumn(string columnName)
+    public ICollectionCollectionFluentAsserter<T> IgnoringColumn(string columnName)
     {
-        _collectionPropertyDefinitions.AddIgnoredColumnName(columnName);
+        _propertyDefinitions.AddIgnoredColumnName(columnName);
         return this;
     }
-
-    public void AssertEquivalent() => Assert();
 
     public void Assert()
     {
-        _collectionPropertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
+        _propertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
 
         if (_table.RowCount != _actualValues.Count())
         {
@@ -59,7 +60,7 @@ public class FluentCollectionAsserter<T> : IFluentAsserter<T>
 
             foreach (var columnName in _table.Header)
             {
-                var propertyDefinitions = _collectionPropertyDefinitions.ForColumn(columnName);
+                var propertyDefinitions = _propertyDefinitions.ForColumn(columnName);
 
                 foreach (var propertyDefinition in propertyDefinitions)
                 {

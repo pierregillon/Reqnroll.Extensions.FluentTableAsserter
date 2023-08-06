@@ -98,7 +98,7 @@ public record PropertyDefinition<T, TProperty>(
         }
         catch (FormatException ex)
         {
-            throw new CannotConvertColumnValueToPropertyTypeException(
+            throw new CannotConvertCellValueToPropertyTypeException(
                 stringExpectedValue,
                 PropertyName,
                 typeof(TProperty),

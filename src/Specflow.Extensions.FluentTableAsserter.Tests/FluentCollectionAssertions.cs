@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
@@ -27,7 +28,7 @@ public class UserCode
     {
         new List<Person>()
             .ShouldBeEquivalentToTable(new Table(""some header""))
-            .AssertEquivalent();
+            .Assert();
     }
 
     public record Person;
@@ -39,9 +40,9 @@ public class UserCode
                 .Should()
                 .NotCompile()
                 .WithErrors(
-                    "'IFluentAsserterInitialization<UserCode.Person>' does not contain a definition for 'AssertEquivalent' "
-                    + "and no accessible extension method 'AssertEquivalent' accepting a first argument of type "
-                    + "'IFluentAsserterInitialization<UserCode.Person>' could be found (are you missing a "
+                    "'ICollectionFluentAsserterInitialization<UserCode.Person>' does not contain a definition for 'Assert' "
+                    + "and no accessible extension method 'Assert' accepting a first argument of type "
+                    + "'ICollectionFluentAsserterInitialization<UserCode.Person>' could be found (are you missing a "
                     + "using directive or an assembly reference?)"
                 );
         }
@@ -79,8 +80,8 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<MissingColumnDefinitionException>()
-                .WithMessage("The column 'Test' has not been mapped to any property of class 'Person'.");
+                .Throw<MissingPropertyDefinitionException>()
+                .WithMessage("Column or field 'Test' has not been mapped to any property of class 'Person'.");
         }
 
         [Fact]
@@ -206,9 +207,9 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<DuplicateColumnDefinitionException>()
+                .Throw<DuplicateColumnsOrFieldsException>()
                 .WithMessage(
-                    $"Columns {firstColumn}, {secondColumn} are duplicates: they match the same property definition 'FirstName' of class 'Person'."
+                    $"Columns or fields {firstColumn}, {secondColumn} are duplicates: they match the same property definition 'FirstName' of class 'Person'."
                 );
         }
 
@@ -219,10 +220,8 @@ public class UserCode
 
             var action = () => EmptyPersonList
                 .ShouldBeEquivalentToTable(table)
-                .WithProperty(x => x.FirstName, options => options
-                    .ComparedToColumn("Name"))
-                .WithProperty(x => x.LastName, options => options
-                    .ComparedToColumn("Name"))
+                .WithProperty(x => x.FirstName, options => options.ComparedToColumn("Name"))
+                .WithProperty(x => x.LastName, options => options.ComparedToColumn("Name"))
                 .Assert();
 
             action
@@ -379,7 +378,7 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<CannotConvertColumnValueToPropertyTypeException>()
+                .Throw<CannotConvertCellValueToPropertyTypeException>()
                 .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
         }
 

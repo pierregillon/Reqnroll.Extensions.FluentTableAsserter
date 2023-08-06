@@ -1,18 +1,17 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 using Specflow.Extensions.FluentTableAsserter.Properties;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
-public class SingleObjectAsserter<TElement> : IFluentAsserter<TElement>
+public class SingleObjectAsserter<TElement> : ISingleObjectFluentAsserter<TElement>
 {
     private readonly Table _table;
     private readonly TElement _actualElement;
-    private readonly SingleObjectPropertyDefinitions<TElement> _propertyDefinitions = new();
+    private readonly PropertyDefinitions<TElement> _propertyDefinitions = new();
 
     public SingleObjectAsserter(Table table, TElement actualElement)
     {
@@ -20,27 +19,28 @@ public class SingleObjectAsserter<TElement> : IFluentAsserter<TElement>
         _actualElement = actualElement;
     }
 
-    public IFluentAsserter<TElement> WithProperty<TProperty>(
+    public ISingleObjectFluentAsserter<TElement> WithProperty<TProperty>(
         Expression<Func<TElement, TProperty>> propertyExpression,
-        Func<PropertyConfiguration<TElement, TProperty>, PropertyConfiguration<TElement, TProperty>>? configure = null
+        Func<ISingleObjectPropertyConfiguration<TElement, TProperty>,
+            ISingleObjectPropertyConfiguration<TElement, TProperty>>? configure = null
     )
     {
         var configuration = configure is not null
             ? configure(PropertyConfiguration<TElement, TProperty>.Default)
             : PropertyConfiguration<TElement, TProperty>.Default;
 
-        _propertyDefinitions.Add(new PropertyDefinition<TElement, TProperty>(propertyExpression, configuration));
+        var cast = (PropertyConfiguration<TElement, TProperty>)configuration;
+
+        _propertyDefinitions.Add(new PropertyDefinition<TElement, TProperty>(propertyExpression, cast));
 
         return this;
     }
 
-    public IFluentAsserter<TElement> IgnoringColumn(string columnName)
+    public ISingleObjectFluentAsserter<TElement> IgnoringField(string columnName)
     {
         _propertyDefinitions.AddIgnoredColumnName(columnName);
         return this;
     }
-
-    public void AssertEquivalent() => Assert();
 
     public void Assert()
     {

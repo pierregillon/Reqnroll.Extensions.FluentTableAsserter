@@ -33,12 +33,12 @@ public class EmailSteps
     private void AssertTableValid(Table table) => _receivedEmail!
         .InstanceShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FromEmail)
-        .WithProperty(x => x.FromEmail, x => x.ComparedToColumn("From"))
+        .WithProperty(x => x.FromEmail, x => x.ComparedToField("From"))
         .WithProperty(x => x.ToEmail)
-        .WithProperty(x => x.ToEmail, x => x.ComparedToColumn("To"))
+        .WithProperty(x => x.ToEmail, x => x.ComparedToField("To"))
         .WithProperty(x => x.Subject)
         .WithProperty(x => x.PlainText)
-        .WithProperty(x => x.PlainText, x => x.ComparedToColumn("Text"))
+        .WithProperty(x => x.PlainText, x => x.ComparedToField("Text"))
         .WithProperty(x => x.AttachmentCount)
         .Assert();
 }
