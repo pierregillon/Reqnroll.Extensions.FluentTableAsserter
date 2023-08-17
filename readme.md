@@ -240,6 +240,7 @@ Scenario: Deleted customers are not listed anymore
 - [x] handle single object assertion (instead of list)
 - [ ] protect if no column match any property defined
 - [x] add more examples
+- [ ] default converters : string => date (sql format), ...
 - [ ] reversed converter from value to column value
 - [ ] Provide default list comparison delegate converter
 - [ ] handle enum flags
