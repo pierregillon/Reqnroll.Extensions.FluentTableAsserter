@@ -519,7 +519,7 @@ public class UserCode
                 .Should()
                 .Throw<ExpectedTableNotEquivalentToObjectException>()
                 .WithMessage(
-                    "'Names' actual data is 'sam, john, eric' but should be 'john, sam, eric' from column 'Names'."
+                    "'Names' actual data is [sam ; john ; eric] but should be [john ; sam ; eric] from column 'Names'."
                 );
         }
 
@@ -539,7 +539,28 @@ public class UserCode
                 .Should()
                 .Throw<ExpectedTableNotEquivalentToObjectException>()
                 .WithMessage(
-                    "'Names' actual data is 'sam, john' but should be 'john, sam, eric' from column 'Names'."
+                    "'Names' actual data is [sam ; john] but should be [john ; sam ; eric] from column 'Names'."
+                );
+        }
+
+        [Fact]
+        public void Array_with_empty_value_fails_with_correct_message()
+        {
+            var emptyTables = BuildTable(new FieldValue("Names", ""));
+            var element = new Details(Array.Empty<string>());
+
+            var action = () => element
+                .ObjectShouldBeEquivalentToTable(emptyTables)
+                .WithProperty(x => x.Names, o => o
+                    .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                )
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToObjectException>()
+                .WithMessage(
+                    "'Names' actual data is [] but should be [''] from column 'Names'."
                 );
         }
 

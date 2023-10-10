@@ -7,12 +7,12 @@ public class ExpectedTableNotEquivalentToCollectionItemException : Exception
     public ExpectedTableNotEquivalentToCollectionItemException(
         int index,
         string memberName,
-        object? actualValue,
+        string actualValue,
         string columnName,
         string expectedValue
     )
         : base(
-            $"At index {index}, '{memberName}' actual data is '{actualValue}' but should be '{expectedValue}' from column '{columnName}'.")
+            $"At index {index}, '{memberName}' actual data is {actualValue} but should be {expectedValue} from column '{columnName}'.")
     {
     }
 }

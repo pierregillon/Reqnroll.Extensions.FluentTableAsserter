@@ -77,7 +77,7 @@ public class SingleObjectAsserter<TElement> : ISingleObjectFluentAsserter<TEleme
                         result.MemberName,
                         result.StringActualValue,
                         fieldName,
-                        expectedValue
+                        result.StringExpectedValue
                     );
                 }
             }

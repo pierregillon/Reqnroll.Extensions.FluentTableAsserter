@@ -75,7 +75,7 @@ public class CollectionFluentAsserter<T> : ICollectionCollectionFluentAsserter<T
                             result.MemberName,
                             result.StringActualValue,
                             columnName,
-                            expectedValue
+                            result.StringExpectedValue
                         );
                     }
                 }

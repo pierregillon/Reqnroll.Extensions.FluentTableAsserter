@@ -40,7 +40,7 @@ public record PropertyDefinition<T, TProperty>(
 
         if (expectedValue is null || actualValue is null)
         {
-            return AssertionResult.Fail(PropertyName, actualValue);
+            return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
         }
 
         if (typeof(TProperty).IsEnumerableType())
@@ -53,14 +53,14 @@ public record PropertyDefinition<T, TProperty>(
 
             if (actualArray.Length != expectedArray.Length)
             {
-                return AssertionResult.Fail(PropertyName, actualValue);
+                return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
             }
 
             foreach (var value in actualArray.Zip(expectedArray, (x, y) => (x, y)))
             {
                 if (!Equals(value.x, value.y))
                 {
-                    return AssertionResult.Fail(PropertyName, actualValue);
+                    return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
                 }
             }
 
@@ -72,7 +72,7 @@ public record PropertyDefinition<T, TProperty>(
             return AssertionResult.Success;
         }
 
-        return AssertionResult.Fail(PropertyName, actualValue);
+        return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
     }
 
     private TProperty ConvertToPropertyType(string stringExpectedValue)

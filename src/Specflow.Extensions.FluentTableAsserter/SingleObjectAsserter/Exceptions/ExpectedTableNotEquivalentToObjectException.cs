@@ -6,12 +6,12 @@ public class ExpectedTableNotEquivalentToObjectException : Exception
 {
     public ExpectedTableNotEquivalentToObjectException(
         string memberName,
-        object? actualValue,
+        string actualValue,
         string columnName,
         string expectedValue
     )
         : base(
-            $"'{memberName}' actual data is '{actualValue}' but should be '{expectedValue}' from column '{columnName}'.")
+            $"'{memberName}' actual data is {actualValue} but should be {expectedValue} from column '{columnName}'.")
     {
     }
 }

@@ -507,7 +507,7 @@ public class UserCode
                 .Should()
                 .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
                 .WithMessage(
-                    "At index 0, 'Names' actual data is 'sam, john, eric' but should be 'john, sam, eric' from column 'Names'."
+                    "At index 0, 'Names' actual data is [sam ; john ; eric] but should be [john ; sam ; eric] from column 'Names'."
                 );
         }
 
@@ -533,7 +533,33 @@ public class UserCode
                 .Should()
                 .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
                 .WithMessage(
-                    "At index 0, 'Names' actual data is 'john, sam, eric' but should be 'john, sam' from column 'Names'."
+                    "At index 0, 'Names' actual data is [john ; sam ; eric] but should be [john ; sam] from column 'Names'."
+                );
+        }
+
+        [Fact]
+        public void Array_with_empty_value_fails_with_correct_message()
+        {
+            var table = new Table("Names");
+            table.AddRow("");
+
+            var elements = new List<Details>
+            {
+                new(Array.Empty<string>())
+            };
+
+            var action = () => elements
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Names, o => o
+                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                )
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
+                .WithMessage(
+                    "At index 0, 'Names' actual data is [] but should be [''] from column 'Names'."
                 );
         }
 
