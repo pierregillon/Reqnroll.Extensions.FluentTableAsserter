@@ -27,12 +27,12 @@ public class CollectionFluentAsserter<T> : ICollectionCollectionFluentAsserter<T
     )
     {
         var configuration = configure is not null
-            ? configure(PropertyConfiguration<T, TProperty>.Default)
-            : PropertyConfiguration<T, TProperty>.Default;
+            ? configure(PropertyConfigurationBuilder<T, TProperty>.Default)
+            : PropertyConfigurationBuilder<T, TProperty>.Default;
 
-        var cast = (PropertyConfiguration<T, TProperty>)configuration;
+        var cast = (PropertyConfigurationBuilder<T, TProperty>)configuration;
 
-        _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, cast));
+        _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, cast.Value));
 
         return this;
     }
@@ -49,7 +49,8 @@ public class CollectionFluentAsserter<T> : ICollectionCollectionFluentAsserter<T
 
         if (_table.RowCount != _actualValues.Count())
         {
-            throw new TableRowCountIsDifferentThanElementCountException(_table.RowCount, typeof(T), _actualValues.Count());
+            throw new TableRowCountIsDifferentThanElementCountException(_table.RowCount, typeof(T),
+                _actualValues.Count());
         }
 
         for (var rowIndex = 0; rowIndex < _table.Rows.Count; rowIndex++)

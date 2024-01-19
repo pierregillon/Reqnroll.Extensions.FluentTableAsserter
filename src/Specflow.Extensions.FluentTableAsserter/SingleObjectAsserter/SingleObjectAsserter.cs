@@ -7,31 +7,22 @@ using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
-public class SingleObjectAsserter<TElement> : ISingleObjectFluentAsserter<TElement>
+public class SingleObjectAsserter<TElement>(Table table, TElement actualElement) : ISingleObjectFluentAsserter<TElement>
 {
-    private readonly Table _table;
-    private readonly TElement _actualElement;
     private readonly PropertyDefinitions<TElement> _propertyDefinitions = new();
 
-    public SingleObjectAsserter(Table table, TElement actualElement)
-    {
-        _table = table;
-        _actualElement = actualElement;
-    }
-
-    public ISingleObjectFluentAsserter<TElement> WithProperty<TProperty>(
+    public ISingleObjectFluentAsserter<TElement> WithProperty<TProperty, TConvertedProperty>(
         Expression<Func<TElement, TProperty>> propertyExpression,
-        Func<ISingleObjectPropertyConfiguration<TElement, TProperty>,
-            ISingleObjectPropertyConfiguration<TElement, TProperty>>? configure = null
+        SingleObjectConfiguration<TElement, TProperty, TConvertedProperty>? configure = default
     )
     {
         var configuration = configure is not null
-            ? configure(PropertyConfiguration<TElement, TProperty>.Default)
-            : PropertyConfiguration<TElement, TProperty>.Default;
+            ? configure(PropertyConfigurationBuilder<TElement, TProperty>.Default)
+            : PropertyConfigurationBuilder<TElement, TConvertedProperty>.Default;
 
-        var cast = (PropertyConfiguration<TElement, TProperty>)configuration;
+        var cast = (PropertyConfigurationBuilder<TElement, TConvertedProperty>)configuration;
 
-        _propertyDefinitions.Add(new PropertyDefinition<TElement, TProperty>(propertyExpression, cast));
+        _propertyDefinitions.Add(new PropertyDefinition<TElement, TProperty>(propertyExpression, cast.Value));
 
         return this;
     }
@@ -44,24 +35,24 @@ public class SingleObjectAsserter<TElement> : ISingleObjectFluentAsserter<TEleme
 
     public void Assert()
     {
-        if (_table.Header.Count != 2)
+        if (table.Header.Count != 2)
         {
             throw new InvalidColumnCountForObjectAssertionException();
         }
 
-        if (!_table.Rows.Any())
+        if (!table.Rows.Any())
         {
             throw new NoFieldToEvaluateException();
         }
 
-        var fieldNames = _table.Rows
+        var fieldNames = table.Rows
             .Select(x => x.Values.First())
             .Distinct()
             .ToArray();
 
         _propertyDefinitions.EnsureColumnAreCorrectlyMapped(fieldNames);
 
-        foreach (var rowGroup in _table.Rows.GroupBy(x => x.Values.First(), x => x.Values.Last()))
+        foreach (var rowGroup in table.Rows.GroupBy(x => x.Values.First(), x => x.Values.Last()))
         {
             var fieldName = rowGroup.Key;
             var expectedValue = string.Join(Environment.NewLine, rowGroup.Select(x => x).ToArray());
@@ -69,7 +60,7 @@ public class SingleObjectAsserter<TElement> : ISingleObjectFluentAsserter<TEleme
 
             foreach (var propertyDefinition in propertyDefinitions)
             {
-                var result = propertyDefinition.AssertEquivalent(expectedValue, _actualElement);
+                var result = propertyDefinition.AssertEquivalent(expectedValue, actualElement);
 
                 if (!result.IsSuccess)
                 {

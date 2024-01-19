@@ -16,7 +16,7 @@ public interface ISingleObjectPropertyConfiguration<in TField, TProperty>
         Func<string, TProperty> conversion
     );
 
-    ISingleObjectPropertyConfiguration<TField, TProperty> WithPropertyToFieldConversion<TNewProperty>(
-        Func<TProperty, TNewProperty> func
-    ) where TNewProperty : notnull;
+    ISingleObjectPropertyConfiguration<TField, TNewProperty> WithPropertyTransformation<TNewProperty>(
+        Func<TProperty, TNewProperty> conversion
+    );
 }

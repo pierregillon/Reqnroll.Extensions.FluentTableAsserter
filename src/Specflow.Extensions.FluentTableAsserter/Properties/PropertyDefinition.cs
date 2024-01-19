@@ -9,7 +9,7 @@ namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
 public record PropertyDefinition<T, TProperty>(
     Expression<Func<T, TProperty>> Expression,
-    PropertyConfiguration<T, TProperty> Configuration
+    PropertyConfiguration Configuration
 ) : IPropertyDefinition<T>
 {
     public string PropertyName { get; } = FindPropertyName(Expression);
@@ -92,9 +92,9 @@ public record PropertyDefinition<T, TProperty>(
 
     private object? ConvertPropertyValue(TProperty property)
     {
-        if (Configuration.PropertyToColumnConversion is not null)
+        if (Configuration.PropertyConversion is not null)
         {
-            return Configuration.PropertyToColumnConversion(property);
+            return Configuration.PropertyConversion?.Invoke(property);
         }
 
         return property;

@@ -512,7 +512,7 @@ public class UserCode
         }
 
         [Fact]
-        public void Accepts_when_field_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
+        public void Accepts_when_field_value_cannot_be_converted_to_property_type_but_a_tranformation_is_defined()
         {
             var table = BuildTable(
                 new FieldValue("Customer", "John Doe")
@@ -524,7 +524,7 @@ public class UserCode
                 .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(
                     x => x.Customer,
-                    x => x.WithPropertyToFieldConversion(property => property.Name)
+                    x => x.WithPropertyTransformation(property => property.Name)
                 )
                 .Assert();
 
@@ -534,7 +534,7 @@ public class UserCode
         }
 
         [Fact]
-        public void Use_the_new_property_type_from_conversion_to_evaluate_equivalency()
+        public void Use_the_new_property_type_from_transformation_to_evaluate_equivalency()
         {
             var table = BuildTable(
                 new FieldValue("Name", "8")
@@ -546,7 +546,7 @@ public class UserCode
                 .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(
                     x => x.Customer.Name,
-                    x => x.WithPropertyToFieldConversion(property => property.Length)
+                    x => x.WithPropertyTransformation(property => property.Length)
                 )
                 .Assert();
 
@@ -638,9 +638,44 @@ public class UserCode
                 );
         }
 
-        private record Details(IEnumerable<string> Names);
-    }
+        [Fact]
+        public void Rich_object_collection_is_assertable_with_double_conversion()
+        {
+            var table = BuildTable(new FieldValue("Customers", "john, sam, eric"));
 
+            var customers = new CustomerList(new[]
+            {
+                new Customer("john"),
+                new Customer("sam2"),
+                new Customer("eric")
+            });
+
+            var action = () => customers
+                .ObjectShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Customers,
+                    o => o
+                        .WithPropertyTransformation(x => x.Select(i => i.Name))
+                        .WithFieldToPropertyConversion(fieldValue =>
+                            fieldValue.Split(',', StringSplitOptions.TrimEntries)
+                        )
+                )
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToObjectException>()
+                .WithMessage(
+                    "'Customers' actual data is [john ; sam2 ; eric] but should be [john ; sam ; eric] from column 'Customers'."
+                );
+        }
+
+        private record Details(IEnumerable<string> Names);
+
+        private record CustomerList(IEnumerable<Customer> Customers);
+
+        private record Customer(string Name);
+    }
 
     private static Table BuildTable(params FieldValue[] fieldValues)
     {

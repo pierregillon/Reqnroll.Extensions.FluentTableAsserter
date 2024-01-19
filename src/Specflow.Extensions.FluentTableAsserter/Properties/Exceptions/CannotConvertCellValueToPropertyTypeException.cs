@@ -24,7 +24,7 @@ singleObject
         x => x.Property,
         x => x
          this // .{nameof(ISingleObjectPropertyConfiguration<object, object>.WithFieldToPropertyConversion)}(propertyValue => ...)
-      or this // .{nameof(ISingleObjectPropertyConfiguration<object, object>.WithPropertyToFieldConversion)}(fieldValue => ...)
+      or this // .{nameof(ISingleObjectPropertyConfiguration<object, object>.WithPropertyTransformation)}(fieldValue => ...)
     )
     .Assert();
 
