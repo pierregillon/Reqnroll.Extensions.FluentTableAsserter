@@ -364,7 +364,7 @@ public class UserCode
         private record Person(string FirstName, string LastName);
     }
 
-    public class ColumnValueConvertionToPropertyValue
+    public class ColumnValueConversionToPropertyValue
     {
         [Fact]
         public void Throws_when_column_value_cannot_be_converted_to_property_type()
@@ -472,8 +472,8 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<CannotParseEnumToEnumValuException<TemperatureType>>()
-                .WithMessage("'test' cannot be parsed to any enum value of type TemperatureType.");
+                .Throw<CannotParseEnumToEnumValuException>()
+                .WithMessage("'test' cannot be parsed to any enum value of type Temperature.");
         }
 
         private record Temperature(int Value, TemperatureType Type);

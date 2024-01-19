@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
@@ -88,7 +89,7 @@ public record PropertyDefinition<T, TProperty>(
             {
                 if (!HumanReadableExtensions.TryParseEnum(typeof(TProperty), stringExpectedValue, out var enumValue))
                 {
-                    throw new CannotParseEnumToEnumValuException<TProperty>(stringExpectedValue);
+                    throw new CannotParseEnumToEnumValuException(stringExpectedValue, typeof(T));
                 }
 
                 return (TProperty)enumValue;
@@ -126,14 +127,12 @@ public record PropertyDefinition<T, TProperty>(
         }
         catch (InvalidOperationException e)
         {
-            throw new InvalidOperationException(
-                $"[SpecFlow] did not manage to find a member name for expression {expression}", e);
+            throw new MemberNameNotFoundOnExpressionException(expression, e);
         }
 
         if (result == null)
         {
-            throw new InvalidOperationException(
-                $"[SpecFlow] did not manage to find a member name for expression {expression}");
+            throw new MemberNameNotFoundOnExpressionException(expression);
         }
 
         return result;

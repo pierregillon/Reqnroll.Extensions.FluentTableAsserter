@@ -1,11 +1,6 @@
 using System;
 
-namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
+namespace Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 
-internal class CannotParseEnumToEnumValuException<T> : Exception
-{
-    public CannotParseEnumToEnumValuException(string invalidEnumValue)
-        : base($"'{invalidEnumValue}' cannot be parsed to any enum value of type {typeof(T).Name}.")
-    {
-    }
-}
+internal class CannotParseEnumToEnumValuException(string invalidEnumValue, Type type)
+    : Exception($"'{invalidEnumValue}' cannot be parsed to any enum value of type {type.Name}.");

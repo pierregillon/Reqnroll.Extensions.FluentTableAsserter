@@ -313,7 +313,7 @@ public class UserCode
 
             _assertion
                 .Should()
-                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
+                .Throw<TableRowCountIsDifferentThanElementCountException>()
                 .WithMessage("Table row count (2) is different than 'Person' count (1)");
         }
 
@@ -326,7 +326,7 @@ public class UserCode
 
             _assertion
                 .Should()
-                .Throw<TableRowCountIsDifferentThanElementCountException<Person>>()
+                .Throw<TableRowCountIsDifferentThanElementCountException>()
                 .WithMessage("Table row count (1) is different than 'Person' count (2)");
         }
 
@@ -450,8 +450,8 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<CannotParseEnumToEnumValuException<TemperatureType>>()
-                .WithMessage("'test' cannot be parsed to any enum value of type TemperatureType.");
+                .Throw<CannotParseEnumToEnumValuException>()
+                .WithMessage("'test' cannot be parsed to any enum value of type Temperature.");
         }
 
         private record Temperature(int Value, TemperatureType Type);
