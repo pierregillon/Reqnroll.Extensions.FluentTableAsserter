@@ -489,7 +489,7 @@ public class UserCode
         }
     }
 
-    public class PropertyValueToFieldValueConversion
+    public class PropertyValueTransformation
     {
         [Fact]
         public void Throws_when_field_value_cannot_be_converted_to_property_type()

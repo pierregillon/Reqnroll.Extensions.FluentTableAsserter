@@ -11,16 +11,16 @@ public class SingleObjectAsserter<TElement>(Table table, TElement actualElement)
 {
     private readonly PropertyDefinitions<TElement> _propertyDefinitions = new();
 
-    public ISingleObjectFluentAsserter<TElement> WithProperty<TProperty, TConvertedProperty>(
+    public ISingleObjectFluentAsserter<TElement> WithProperty<TProperty, TTransformedProperty>(
         Expression<Func<TElement, TProperty>> propertyExpression,
-        SingleObjectConfiguration<TElement, TProperty, TConvertedProperty>? configure = default
+        SingleObjectConfiguration<TElement, TProperty, TTransformedProperty>? configure = default
     )
     {
         var configuration = configure is not null
             ? configure(PropertyConfigurationBuilder<TElement, TProperty>.Default)
-            : PropertyConfigurationBuilder<TElement, TConvertedProperty>.Default;
+            : PropertyConfigurationBuilder<TElement, TTransformedProperty>.Default;
 
-        var cast = (PropertyConfigurationBuilder<TElement, TConvertedProperty>)configuration;
+        var cast = (PropertyConfigurationBuilder<TElement, TTransformedProperty>)configuration;
 
         _propertyDefinitions.Add(new PropertyDefinition<TElement, TProperty>(propertyExpression, cast.Value));
 

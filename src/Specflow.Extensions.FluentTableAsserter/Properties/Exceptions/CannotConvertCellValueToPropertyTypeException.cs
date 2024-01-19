@@ -35,8 +35,8 @@ singleObject
     .WithProperty(
         x => x.Property,
         x => x
-         this // .{nameof(ICollectionPropertyConfiguration<object, object>.WithColumnValueConversion)}(propertyValue => ...)
-      or this // .{nameof(ICollectionPropertyConfiguration<object, object>.WithColumnValueConversion)}(fieldValue => ...)
+         this // .{nameof(ICollectionPropertyConfiguration<object, object>.WithColumnToPropertyConversion)}(propertyValue => ...)
+      or this // .{nameof(ICollectionPropertyConfiguration<object, object>.WithColumnToPropertyConversion)}(fieldValue => ...)
     )
     .Assert();
 

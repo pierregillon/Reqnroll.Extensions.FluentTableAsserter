@@ -8,7 +8,9 @@ namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
 public record PropertyConfigurationBuilder<T, TProperty>(
     PropertyConfiguration Value
-) : ISingleObjectPropertyConfiguration<T, TProperty>, ICollectionPropertyConfiguration<T, TProperty>
+) :
+    ISingleObjectPropertyConfiguration<T, TProperty>,
+    ICollectionPropertyConfiguration<T, TProperty>
 {
     public static PropertyConfigurationBuilder<T, TProperty> Default => new(PropertyConfiguration.Default);
 
@@ -24,32 +26,32 @@ public record PropertyConfigurationBuilder<T, TProperty>(
         };
 
     ISingleObjectPropertyConfiguration<T, TProperty> ISingleObjectPropertyConfiguration<T, TProperty>.
-        WithFieldValueConversion(Func<string, TProperty> conversion) =>
+        WithFieldValueConversion(Func<string, TProperty> convert) =>
         this with
         {
             Value = Value with
             {
-                ColumnToPropertyConversion = s => s
+                ColumnToPropertyConversion = s => convert(s)
             }
         };
 
     public ISingleObjectPropertyConfiguration<T, TProperty> WithFieldToPropertyConversion(
-        Func<string, TProperty> conversion
+        Func<string, TProperty> convert
     ) =>
         this with
         {
             Value = Value with
             {
-                ColumnToPropertyConversion = s => conversion(s)
+                ColumnToPropertyConversion = s => convert(s)
             }
         };
 
     public ISingleObjectPropertyConfiguration<T, TNewProperty> WithPropertyTransformation<TNewProperty>(
-        Func<TProperty, TNewProperty> conversion
+        Func<TProperty, TNewProperty> transform
     ) =>
         new PropertyConfigurationBuilder<T, TNewProperty>(Value with
         {
-            PropertyConversion = p => conversion((TProperty)p!)
+            PropertyConversion = p => transform((TProperty)p!)
         });
 
     ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.ComparedToColumn(
@@ -63,13 +65,30 @@ public record PropertyConfigurationBuilder<T, TProperty>(
             }
         };
 
-    ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.
-        WithColumnValueConversion(Func<string, TProperty> conversion) =>
+    public ICollectionPropertyConfiguration<T, TProperty>
+        WithColumnValueConversion(Func<string, TProperty> convert) =>
         this with
         {
             Value = Value with
             {
-                ColumnToPropertyConversion = s => conversion(s)
+                ColumnToPropertyConversion = s => convert(s)
             }
         };
+
+    ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.
+        WithColumnToPropertyConversion(Func<string, TProperty> convert) =>
+        this with
+        {
+            Value = Value with
+            {
+                ColumnToPropertyConversion = s => convert(s)
+            }
+        };
+
+    ICollectionPropertyConfiguration<T, TNewProperty> ICollectionPropertyConfiguration<T, TProperty>.
+        WithPropertyTransformation<TNewProperty>(Func<TProperty, TNewProperty> transform) =>
+        new PropertyConfigurationBuilder<T, TNewProperty>(Value with
+        {
+            PropertyConversion = p => transform((TProperty)p!)
+        });
 }

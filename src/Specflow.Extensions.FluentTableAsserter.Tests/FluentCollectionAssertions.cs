@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
@@ -387,7 +388,7 @@ public class UserCode
             var action = () => _actualTemperatures
                 .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value, options => options
-                    .WithColumnValueConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                    .WithColumnToPropertyConversion(columnValue => columnValue == "hundred" ? 100 : -1))
                 .IgnoringColumn("Type")
                 .Assert();
 
@@ -460,6 +461,91 @@ public class UserCode
         }
     }
 
+    public class PropertyValueTransformation
+    {
+        [Fact]
+        public void Throws_when_field_value_cannot_be_converted_to_property_type()
+        {
+            var table = BuildTable(
+                new[] { "Customer" },
+                new[] { "John Doe" }
+            );
+
+            var roots = new[]
+            {
+                new Root(new Customer("John Doe"))
+            };
+
+            var action = () => roots
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Customer)
+                .Assert();
+
+            action
+                .Should()
+                .Throw<CannotConvertCellValueToPropertyTypeException>()
+                .WithMessageStartingWith(
+                    "The value 'John Doe' cannot be converted to type 'Customer' of property 'Root.Customer'."
+                );
+        }
+
+        [Fact]
+        public void Accepts_when_field_value_cannot_be_converted_to_property_type_but_a_tranformation_is_defined()
+        {
+            var table = BuildTable(
+                new[] { "Customer" },
+                new[] { "John Doe" }
+            );
+
+            var customers = new[]
+            {
+                new Root(new Customer("John Doe"))
+            };
+
+            var action = () => customers
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Customer,
+                    x => x.WithPropertyTransformation(cellValue => cellValue.Name)
+                )
+                .Assert();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
+        public void Use_the_new_property_type_from_transformation_to_evaluate_equivalency()
+        {
+            var table = BuildTable(
+                new[] { "Name" },
+                new[] { "8" }
+            );
+
+            var roots = new[]
+            {
+                new Root(new Customer("John Doe"))
+            };
+
+            var action = () => roots
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Customer.Name,
+                    x => x.WithPropertyTransformation(property => property.Length)
+                )
+                .Assert();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        private record Root(Customer Customer);
+
+        private record Customer(string Name);
+    }
+
     public class ArrayConvertion
     {
         [Fact]
@@ -475,8 +561,9 @@ public class UserCode
 
             elements
                 .CollectionShouldBeEquivalentToTable(table)
-                .WithProperty(x => x.Names, o => o
-                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitCellValueBySeparator()
                 )
                 .Assert();
         }
@@ -494,8 +581,9 @@ public class UserCode
 
             var action = () => elements
                 .CollectionShouldBeEquivalentToTable(table)
-                .WithProperty(x => x.Names, o => o
-                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitCellValueBySeparator()
                 )
                 .Assert();
 
@@ -520,8 +608,9 @@ public class UserCode
 
             var action = () => elements
                 .CollectionShouldBeEquivalentToTable(table)
-                .WithProperty(x => x.Names, o => o
-                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitCellValueBySeparator()
                 )
                 .Assert();
 
@@ -546,8 +635,9 @@ public class UserCode
 
             var action = () => elements
                 .CollectionShouldBeEquivalentToTable(table)
-                .WithProperty(x => x.Names, o => o
-                    .WithColumnValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitCellValueBySeparator()
                 )
                 .Assert();
 
@@ -559,6 +649,58 @@ public class UserCode
                 );
         }
 
+        [Fact]
+        public void Rich_object_collection_is_assertable_with_double_conversion()
+        {
+            var table = BuildTable(
+                new[] { "Customers" },
+                new[] { "john, sam, eric" }
+            );
+
+            var customers = new[]
+            {
+                new CustomerList(new[]
+                {
+                    new Customer("john"),
+                    new Customer("sam2"),
+                    new Customer("eric")
+                })
+            };
+
+            var action = () => customers
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Customers,
+                    o => o
+                        .WithPropertyTransformation(x => x.Select(i => i.Name))
+                        .SplitCellValueBySeparator()
+                )
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
+                .WithMessage(
+                    "At index 0, 'Customers' actual data is [john ; sam2 ; eric] but should be [john ; sam ; eric] from column 'Customers'."
+                );
+        }
+
         private record Details(IEnumerable<string> Names);
+
+        private record CustomerList(IEnumerable<Customer> Customers);
+
+        private record Customer(string Name);
+    }
+
+    private static Table BuildTable(string[] headers, params string[][] rows)
+    {
+        var table = new Table(headers);
+
+        foreach (var row in rows)
+        {
+            table.AddRow(row);
+        }
+
+        return table;
     }
 }

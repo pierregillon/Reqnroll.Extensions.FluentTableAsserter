@@ -2,11 +2,23 @@ using System;
 
 namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
-public interface ICollectionPropertyConfiguration<T, in TProperty>
+public interface ICollectionPropertyConfiguration<TCollection, TProperty>
 {
-    public ICollectionPropertyConfiguration<T, TProperty> ComparedToColumn(string columnName);
+    public ICollectionPropertyConfiguration<TCollection, TProperty> ComparedToColumn(string columnName);
 
-    public ICollectionPropertyConfiguration<T, TProperty> WithColumnValueConversion(
-        Func<string, TProperty> conversion
+    [Obsolete(
+        $"Use {nameof(ICollectionPropertyConfiguration<object, object>.WithColumnToPropertyConversion)} instead."
+    )]
+    public ICollectionPropertyConfiguration<TCollection, TProperty> WithColumnValueConversion(
+        Func<string, TProperty> convert
     );
+
+    public ICollectionPropertyConfiguration<TCollection, TProperty> WithColumnToPropertyConversion(
+        Func<string, TProperty> convert
+    );
+
+    ICollectionPropertyConfiguration<TCollection, TTransformedProperty>
+        WithPropertyTransformation<TTransformedProperty>(
+            Func<TProperty, TTransformedProperty> transform
+        );
 }

@@ -8,29 +8,21 @@ using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
-public class CollectionFluentAsserter<T> : ICollectionCollectionFluentAsserter<T>
+public class CollectionFluentAsserter<T>(Table table, IEnumerable<T> actualValues)
+    : ICollectionCollectionFluentAsserter<T>
 {
-    private readonly Table _table;
-    private readonly IEnumerable<T> _actualValues;
     private readonly PropertyDefinitions<T> _propertyDefinitions = new();
 
-    internal CollectionFluentAsserter(Table table, IEnumerable<T> actualValues)
-    {
-        _table = table;
-        _actualValues = actualValues;
-    }
-
-    public ICollectionCollectionFluentAsserter<T> WithProperty<TProperty>(
+    public ICollectionCollectionFluentAsserter<T> WithProperty<TProperty, TTransformedProperty>(
         Expression<Func<T, TProperty>> propertyExpression,
-        Func<ICollectionPropertyConfiguration<T, TProperty>, ICollectionPropertyConfiguration<T, TProperty>>?
-            configure = null
+        CollectionConfiguration<T, TProperty, TTransformedProperty>? configure = null
     )
     {
         var configuration = configure is not null
             ? configure(PropertyConfigurationBuilder<T, TProperty>.Default)
-            : PropertyConfigurationBuilder<T, TProperty>.Default;
+            : PropertyConfigurationBuilder<T, TTransformedProperty>.Default;
 
-        var cast = (PropertyConfigurationBuilder<T, TProperty>)configuration;
+        var cast = (PropertyConfigurationBuilder<T, TTransformedProperty>)configuration;
 
         _propertyDefinitions.Add(new PropertyDefinition<T, TProperty>(propertyExpression, cast.Value));
 
@@ -45,21 +37,21 @@ public class CollectionFluentAsserter<T> : ICollectionCollectionFluentAsserter<T
 
     public void Assert()
     {
-        _propertyDefinitions.EnsureColumnAreCorrectlyMapped(_table.Header);
+        _propertyDefinitions.EnsureColumnAreCorrectlyMapped(table.Header);
 
-        if (_table.RowCount != _actualValues.Count())
+        if (table.RowCount != actualValues.Count())
         {
-            throw new TableRowCountIsDifferentThanElementCountException(_table.RowCount, typeof(T),
-                _actualValues.Count());
+            throw new TableRowCountIsDifferentThanElementCountException(table.RowCount, typeof(T),
+                actualValues.Count());
         }
 
-        for (var rowIndex = 0; rowIndex < _table.Rows.Count; rowIndex++)
+        for (var rowIndex = 0; rowIndex < table.Rows.Count; rowIndex++)
         {
-            var row = _table.Rows[rowIndex];
+            var row = table.Rows[rowIndex];
 
-            var data = _actualValues.ElementAt(rowIndex);
+            var data = actualValues.ElementAt(rowIndex);
 
-            foreach (var columnName in _table.Header)
+            foreach (var columnName in table.Header)
             {
                 var propertyDefinitions = _propertyDefinitions.ForColumn(columnName);
 

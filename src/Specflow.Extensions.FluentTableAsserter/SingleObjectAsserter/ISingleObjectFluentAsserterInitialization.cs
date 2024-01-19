@@ -10,13 +10,13 @@ public interface ISingleObjectFluentAsserterInitialization<T>
     ) =>
         WithProperty(propertyExpression, x => x);
 
-    ISingleObjectFluentAsserter<T> WithProperty<TProperty, TConvertedProperty>(
+    ISingleObjectFluentAsserter<T> WithProperty<TProperty, TTransformedProperty>(
         Expression<Func<T, TProperty>> propertyExpression,
-        SingleObjectConfiguration<T, TProperty, TConvertedProperty>? configure = default
+        SingleObjectConfiguration<T, TProperty, TTransformedProperty>? configure = default
     );
 }
 
-public delegate ISingleObjectPropertyConfiguration<T, TConvertedProperty> SingleObjectConfiguration<T, TProperty,
-    TConvertedProperty>(
+public delegate ISingleObjectPropertyConfiguration<T, TTransformedProperty> SingleObjectConfiguration<T, TProperty,
+    TTransformedProperty>(
     ISingleObjectPropertyConfiguration<T, TProperty> value
 );

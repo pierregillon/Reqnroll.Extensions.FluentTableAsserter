@@ -6,8 +6,17 @@ namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 public interface ICollectionFluentAsserterInitialization<T>
 {
     ICollectionCollectionFluentAsserter<T> WithProperty<TProperty>(
+        Expression<Func<T, TProperty>> propertyExpression
+    ) =>
+        WithProperty(propertyExpression, x => x);
+
+    ICollectionCollectionFluentAsserter<T> WithProperty<TProperty, TTransformedProperty>(
         Expression<Func<T, TProperty>> propertyExpression,
-        Func<ICollectionPropertyConfiguration<T, TProperty>, ICollectionPropertyConfiguration<T, TProperty>>?
-            configure = null
+        CollectionConfiguration<T, TProperty, TTransformedProperty>? configure = default
     );
 }
+
+public delegate ICollectionPropertyConfiguration<T, TTransformedProperty> CollectionConfiguration<T, TProperty,
+    TTransformedProperty>(
+    ICollectionPropertyConfiguration<T, TProperty> value
+);

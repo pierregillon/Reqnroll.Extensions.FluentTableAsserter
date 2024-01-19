@@ -2,21 +2,22 @@ using System;
 
 namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
-public interface ISingleObjectPropertyConfiguration<in TField, TProperty>
+public interface ISingleObjectPropertyConfiguration<in TObject, TProperty>
 {
-    public ISingleObjectPropertyConfiguration<TField, TProperty> ComparedToField(string columnName);
+    public ISingleObjectPropertyConfiguration<TObject, TProperty> ComparedToField(string columnName);
 
     [Obsolete(
-        $"Use {nameof(ISingleObjectPropertyConfiguration<object, object>.WithFieldToPropertyConversion)} instead.")]
-    public ISingleObjectPropertyConfiguration<TField, TProperty> WithFieldValueConversion(
-        Func<string, TProperty> conversion
+        $"Use {nameof(ISingleObjectPropertyConfiguration<object, object>.WithFieldToPropertyConversion)} instead."
+    )]
+    public ISingleObjectPropertyConfiguration<TObject, TProperty> WithFieldValueConversion(
+        Func<string, TProperty> convert
     );
 
-    public ISingleObjectPropertyConfiguration<TField, TProperty> WithFieldToPropertyConversion(
-        Func<string, TProperty> conversion
+    public ISingleObjectPropertyConfiguration<TObject, TProperty> WithFieldToPropertyConversion(
+        Func<string, TProperty> convert
     );
 
-    ISingleObjectPropertyConfiguration<TField, TNewProperty> WithPropertyTransformation<TNewProperty>(
-        Func<TProperty, TNewProperty> conversion
+    ISingleObjectPropertyConfiguration<TObject, TTransformedProperty> WithPropertyTransformation<TTransformedProperty>(
+        Func<TProperty, TTransformedProperty> transform
     );
 }
