@@ -649,7 +649,7 @@ public class UserCode
         }
 
         [Fact]
-        public void Array_with_empty_value_fails_with_correct_message()
+        public void Array_with_empty_value_is_equivalent_to_empty_cell()
         {
             var emptyTables = BuildTable(new FieldValue("Names", ""));
             var element = new Details(Array.Empty<string>());
@@ -664,10 +664,7 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<ExpectedTableNotEquivalentToObjectException>()
-                .WithMessage(
-                    "'Names' actual data is [] but should be [''] from column 'Names'."
-                );
+                .NotThrow();
         }
 
         [Fact]

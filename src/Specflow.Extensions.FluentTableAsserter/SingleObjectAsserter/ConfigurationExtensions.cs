@@ -22,7 +22,7 @@ public static class ConfigurationExtensions
         configuration
             .WithFieldToPropertyConversion(
                 fieldValue => fieldValue
-                    .Split(splitCharacter)
+                    .Split(splitCharacter, StringSplitOptions.RemoveEmptyEntries)
                     .Select(x => x.Trim())
             );
 
@@ -42,7 +42,7 @@ public static class ConfigurationExtensions
         configuration
             .WithCellToPropertyConversion(
                 fieldValue => fieldValue
-                    .Split(splitCharacter)
+                    .Split(splitCharacter, StringSplitOptions.RemoveEmptyEntries)
                     .Select(x => x.Trim())
             );
 
@@ -63,7 +63,7 @@ public static class ConfigurationExtensions
         configuration
             .WithCellToPropertyConversion(
                 fieldValue => fieldValue
-                    .Split(splitCharacter)
+                    .Split(splitCharacter, StringSplitOptions.RemoveEmptyEntries)
                     .Select(x => x.Trim())
                     .Select(HumanReadableExtensions.ParseEnum<TEnum>)
             );
