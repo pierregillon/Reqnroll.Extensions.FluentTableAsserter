@@ -76,7 +76,7 @@ public record PropertyConfigurationBuilder<T, TProperty>(
         };
 
     ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.
-        WithColumnToPropertyConversion(Func<string, TProperty> convert) =>
+        WithCellToPropertyConversion(Func<string, TProperty> convert) =>
         this with
         {
             Value = Value with

@@ -421,7 +421,7 @@ public class UserCode
             var action = () => _actualTemperatures
                 .CollectionShouldBeEquivalentToTable(_expectedTemperatureTable)
                 .WithProperty(x => x.Value, options => options
-                    .WithColumnToPropertyConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                    .WithCellToPropertyConversion(columnValue => columnValue == "hundred" ? 100 : -1))
                 .IgnoringColumn("Type")
                 .Assert();
 

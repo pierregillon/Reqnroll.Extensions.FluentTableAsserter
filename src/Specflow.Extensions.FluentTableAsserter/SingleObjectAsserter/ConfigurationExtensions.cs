@@ -40,7 +40,7 @@ public static class ConfigurationExtensions
             string splitCharacter = ","
         ) =>
         configuration
-            .WithColumnToPropertyConversion(
+            .WithCellToPropertyConversion(
                 fieldValue => fieldValue
                     .Split(splitCharacter)
                     .Select(x => x.Trim())
@@ -61,7 +61,7 @@ public static class ConfigurationExtensions
         string splitCharacter = ","
     ) where TEnum : Enum =>
         configuration
-            .WithColumnToPropertyConversion(
+            .WithCellToPropertyConversion(
                 fieldValue => fieldValue
                     .Split(splitCharacter)
                     .Select(x => x.Trim())

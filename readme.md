@@ -171,9 +171,9 @@ A second argument of `.WithProperty()` allows you to provide a delegate to confi
 
 It is useful when your gherkin language is different than english but your classes and records still are in english.
 
-> 💡 Remember in **DDD guidelines**, a strong objective is to share the **same language across the team / company**, from
-> domain
-> experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a *
+> 💡 Remember in **Domain Driven Development guidelines**, a strong objective is to share the **same language across the
+team / company**, from
+> domain experts to developers. The code must be aligned to domain specific terms. So in the example, if we decided a *
 *customer**
 > has a **full name**
 > instead of a **name**, it is preferable to rename the property `Name` into `FullName` instead of overriding the mapped
@@ -181,13 +181,13 @@ It is useful when your gherkin language is different than english but your class
 
 ### Define conversion delegate
 
-If the column value type (string) cannot be converted to the property type, you must define how the table asserter will
-converted it, by providing a conversion delegate.
+If the cell value (a string) cannot be converted to the property type, you must define how the table asserter will
+converted it, by providing a **conversion delegate**.
 
 ```csharp
 .WithProperty(
     x => x.Price,
-    o => o.WithColumnValueConversion(columnValue => ...)
+    o => o.WithCellToPropertyConversion(columnValue => ...)
 )
 ```
 
@@ -212,9 +212,47 @@ You can define the conversion as:
 ```csharp
 .WithProperty(
     x => x.Price,
-    o => o.WithColumnValueConversion(columnValue => Price.Parse(columnValue)
+    o => o.WithCellToPropertyConversion(Price.Parse)
 )
 ```
+
+### Define column transformation
+
+When you have complex objects with wrapped objects, you may want to provide transformation logic within the **property
+declaration**.
+
+It works fine, however, error message can be a little bit tricky to understand.
+
+Example:
+
+```csharp
+.WithProperty(
+    x => x.Customers.Select(c => c.Name),
+    o => o
+        .ComparedToColumn("Customers")
+        .SplitCellValueBySeparator()
+)
+```
+
+Error message example:
+> "At index 0, 'Customers.Select(c => c.Name)' actual data is [John Doe ; Erika Doe] but should
+> be [John Doe2 ; Erika Doe]
+> from column 'Customers'."
+
+To avoid this, you can add a property transformation `WithPropertyTransformation`:
+
+```csharp
+.WithProperty(
+    x => x.Customers,
+    o => o
+        .WithPropertyTransformation(x => x.Select(c => c.Name))
+        .SplitCellValueBySeparator()
+)
+```
+
+Better error message:
+> "At index 0, 'Customers' actual data is [John Doe ; Erika Doe] but should be [John Doe2 ; Erika Doe] from column '
+> Customers'."
 
 ## Optional columns
 
@@ -234,19 +272,19 @@ Scenario: Deleted customers are not listed anymore
       | Sam Smith |
 ```
 
-## Remaining tasks
+## Roadmap
 
 - [x] natively handle enumeration without converter
 - [x] handle single object assertion (instead of list)
 - [ ] protect if no column match any property defined
 - [x] add more examples
 - [ ] default converters : string => date (sql format), ...
-- [ ] reversed converter from value to column value
-- [ ] Provide default list comparison delegate converter
+- [x] reversed converter from value to column value
+- [x] Provide default list comparison delegate converter
 - [ ] handle enum flags
 - [ ] provide examples on ColumnValueConversion
 - [ ] provide examples on chained property expression to assert sub elements
 - [ ] automatic conversion using implicit operator converter
 - [ ] configure to use regex as assertion method on string
-- [ ] better assert error when chaining method on property (Obj.MyProperty.ToString())
+- [x] better assert error when chaining method on property (Obj.MyProperty.ToString())
 - [ ] better assert error by providing the table that would match
