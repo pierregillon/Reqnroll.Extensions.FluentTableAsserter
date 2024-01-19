@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using FluentAssertions;
 using FluentAssertions.Specialized;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
+using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
 using TechTalk.SpecFlow;
 
@@ -571,8 +572,9 @@ public class UserCode
 
             element
                 .ObjectShouldBeEquivalentToTable(_table)
-                .WithProperty(x => x.Names, o => o
-                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitFieldValueBySeparator()
                 )
                 .Assert();
         }
@@ -584,8 +586,9 @@ public class UserCode
 
             var action = () => element
                 .ObjectShouldBeEquivalentToTable(_table)
-                .WithProperty(x => x.Names, o => o
-                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitFieldValueBySeparator()
                 )
                 .Assert();
 
@@ -604,8 +607,9 @@ public class UserCode
 
             var action = () => element
                 .ObjectShouldBeEquivalentToTable(_table)
-                .WithProperty(x => x.Names, o => o
-                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitFieldValueBySeparator()
                 )
                 .Assert();
 
@@ -625,8 +629,9 @@ public class UserCode
 
             var action = () => element
                 .ObjectShouldBeEquivalentToTable(emptyTables)
-                .WithProperty(x => x.Names, o => o
-                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
+                .WithProperty(
+                    x => x.Names,
+                    o => o.SplitFieldValueBySeparator()
                 )
                 .Assert();
 
@@ -656,9 +661,7 @@ public class UserCode
                     x => x.Customers,
                     o => o
                         .WithPropertyTransformation(x => x.Select(i => i.Name))
-                        .WithFieldToPropertyConversion(fieldValue =>
-                            fieldValue.Split(',', StringSplitOptions.TrimEntries)
-                        )
+                        .SplitFieldValueBySeparator()
                 )
                 .Assert();
 
