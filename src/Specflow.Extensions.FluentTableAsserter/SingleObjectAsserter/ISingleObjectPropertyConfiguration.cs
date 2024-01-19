@@ -2,11 +2,21 @@ using System;
 
 namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
-public interface ISingleObjectPropertyConfiguration<T, in TProperty>
+public interface ISingleObjectPropertyConfiguration<in TField, TProperty>
 {
-    public ISingleObjectPropertyConfiguration<T, TProperty> ComparedToField(string columnName);
+    public ISingleObjectPropertyConfiguration<TField, TProperty> ComparedToField(string columnName);
 
-    public ISingleObjectPropertyConfiguration<T, TProperty> WithFieldValueConversion(
+    [Obsolete(
+        $"Use {nameof(ISingleObjectPropertyConfiguration<object, object>.WithFieldToPropertyConversion)} instead.")]
+    public ISingleObjectPropertyConfiguration<TField, TProperty> WithFieldValueConversion(
         Func<string, TProperty> conversion
     );
+
+    public ISingleObjectPropertyConfiguration<TField, TProperty> WithFieldToPropertyConversion(
+        Func<string, TProperty> conversion
+    );
+
+    ISingleObjectPropertyConfiguration<TField, TProperty> WithPropertyToFieldConversion<TNewProperty>(
+        Func<TProperty, TNewProperty> func
+    ) where TNewProperty : notnull;
 }

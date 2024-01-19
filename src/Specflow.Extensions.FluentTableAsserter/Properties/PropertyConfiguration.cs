@@ -4,10 +4,13 @@ using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;
 
-public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<string, TProperty>? ColumnValueConversion)
-    : ISingleObjectPropertyConfiguration<T, TProperty>, ICollectionPropertyConfiguration<T, TProperty>
+public record PropertyConfiguration<T, TProperty>(
+    string? ColumnName,
+    Func<string, TProperty>? ColumnToPropertyConversion,
+    Func<TProperty, object>? PropertyToColumnConversion
+) : ISingleObjectPropertyConfiguration<T, TProperty>, ICollectionPropertyConfiguration<T, TProperty>
 {
-    public static PropertyConfiguration<T, TProperty> Default => new(null, default);
+    public static PropertyConfiguration<T, TProperty> Default => new(null, default, default);
 
     ISingleObjectPropertyConfiguration<T, TProperty> ISingleObjectPropertyConfiguration<T, TProperty>.ComparedToField(
         string columnName
@@ -16,7 +19,18 @@ public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<strin
 
     ISingleObjectPropertyConfiguration<T, TProperty> ISingleObjectPropertyConfiguration<T, TProperty>.
         WithFieldValueConversion(Func<string, TProperty> conversion) =>
-        this with { ColumnValueConversion = conversion };
+        this with { ColumnToPropertyConversion = conversion };
+
+    public ISingleObjectPropertyConfiguration<T, TProperty> WithFieldToPropertyConversion(
+        Func<string, TProperty> conversion
+    ) =>
+        this with { ColumnToPropertyConversion = conversion };
+
+    public ISingleObjectPropertyConfiguration<T, TProperty> WithPropertyToFieldConversion<TNewProperty>(
+        Func<TProperty, TNewProperty> func
+    )
+        where TNewProperty : notnull =>
+        this with { PropertyToColumnConversion = p => func(p) };
 
     ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.ComparedToColumn(
         string columnName
@@ -25,5 +39,5 @@ public record PropertyConfiguration<T, TProperty>(string? ColumnName, Func<strin
 
     ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.
         WithColumnValueConversion(Func<string, TProperty> conversion) =>
-        this with { ColumnValueConversion = conversion };
+        this with { ColumnToPropertyConversion = conversion };
 }

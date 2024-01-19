@@ -355,14 +355,8 @@ public class UserCode
 
     public class ColumnValueConvertionToPropertyValue
     {
-        private readonly Table _expectedTemperatureTable;
-        private readonly List<Temperature> _actualTemperatures;
-
-        public ColumnValueConvertionToPropertyValue()
-        {
-            _expectedTemperatureTable = new Table("Value", "Type");
-            _actualTemperatures = new List<Temperature>();
-        }
+        private readonly Table _expectedTemperatureTable = new("Value", "Type");
+        private readonly List<Temperature> _actualTemperatures = new();
 
         [Fact]
         public void Throws_when_column_value_cannot_be_converted_to_property_type()
@@ -379,7 +373,9 @@ public class UserCode
             action
                 .Should()
                 .Throw<CannotConvertCellValueToPropertyTypeException>()
-                .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
+                .WithMessageStartingWith(
+                    "The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'."
+                );
         }
 
         [Fact]

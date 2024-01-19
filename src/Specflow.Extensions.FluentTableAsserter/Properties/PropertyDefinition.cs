@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
-using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;
@@ -20,18 +19,29 @@ public record PropertyDefinition<T, TProperty>(
 
     public AssertionResult AssertEquivalent(string stringExpectedValue, T data)
     {
-        var expectedValue = ConvertToPropertyType(stringExpectedValue);
-        var actualValue = _getPropertyValue(data);
+        var actualValue = ConvertPropertyValue(_getPropertyValue(data));
 
+        var expectedValue = ConvertColumnValue(
+            stringExpectedValue,
+            actualValue?.GetType() ?? typeof(TProperty)
+        );
+
+        return AssertEquivalent(actualValue, expectedValue);
+    }
+
+    private AssertionResult AssertEquivalent(object? actualValue, object? expectedValue)
+    {
         if (expectedValue is null && actualValue is null)
         {
             return AssertionResult.Success;
         }
 
-        if (typeof(TProperty) == typeof(string))
+        var actualType = actualValue?.GetType() ?? typeof(TProperty);
+
+        if (actualType == typeof(string))
         {
-            var actual = (string?)(object?)actualValue;
-            var expected = (string?)(object?)expectedValue;
+            var actual = (string?)actualValue;
+            var expected = (string?)expectedValue;
 
             if (string.IsNullOrEmpty(actual) && string.IsNullOrEmpty(expected))
             {
@@ -44,28 +54,14 @@ public record PropertyDefinition<T, TProperty>(
             return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
         }
 
-        if (typeof(TProperty).IsEnumerableType())
+        if (actualType.IsEnumerableType())
         {
             var actual = (IEnumerable)actualValue;
             var expected = (IEnumerable)expectedValue;
 
-            var actualArray = actual.Enumerate().ToArray();
-            var expectedArray = expected.Enumerate().ToArray();
-
-            if (actualArray.Length != expectedArray.Length)
-            {
-                return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
-            }
-
-            foreach (var value in actualArray.Zip(expectedArray, (x, y) => (x, y)))
-            {
-                if (!Equals(value.x, value.y))
-                {
-                    return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
-                }
-            }
-
-            return AssertionResult.Success;
+            return !Equivalent(actual, expected)
+                ? AssertionResult.Fail(PropertyName, actualValue, expectedValue)
+                : AssertionResult.Success;
         }
 
         if (actualValue.Equals(expectedValue))
@@ -76,33 +72,71 @@ public record PropertyDefinition<T, TProperty>(
         return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
     }
 
-    private TProperty ConvertToPropertyType(string stringExpectedValue)
+    private static bool Equivalent(IEnumerable actual, IEnumerable expected)
+    {
+        var actualArray = actual.Enumerate().ToArray();
+        var expectedArray = expected.Enumerate().ToArray();
+
+        if (actualArray.Length != expectedArray.Length)
+        {
+            return false;
+        }
+
+        if (actualArray.Zip(expectedArray, (x, y) => (x, y)).Any(value => !Equals(value.x, value.y)))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private object? ConvertPropertyValue(TProperty property)
+    {
+        if (Configuration.PropertyToColumnConversion is not null)
+        {
+            return Configuration.PropertyToColumnConversion(property);
+        }
+
+        return property;
+    }
+
+    private object? ConvertColumnValue(string stringExpectedValue, Type propertyType)
     {
         try
         {
-            if (Configuration.ColumnValueConversion is not null)
+            if (Configuration.ColumnToPropertyConversion is not null)
             {
-                return Configuration.ColumnValueConversion(stringExpectedValue);
+                return Configuration.ColumnToPropertyConversion(stringExpectedValue);
             }
 
-            if (typeof(TProperty).IsEnum)
+            if (propertyType.IsEnum)
             {
-                if (!HumanReadableExtensions.TryParseEnum(typeof(TProperty), stringExpectedValue, out var enumValue))
+                if (!HumanReadableExtensions.TryParseEnum(propertyType, stringExpectedValue, out var enumValue))
                 {
                     throw new CannotParseEnumToEnumValuException(stringExpectedValue, typeof(T));
                 }
 
-                return (TProperty)enumValue;
+                return enumValue;
             }
 
-            return (TProperty)Convert.ChangeType(stringExpectedValue, typeof(TProperty));
+            return Convert.ChangeType(stringExpectedValue, propertyType);
         }
         catch (FormatException ex)
         {
             throw new CannotConvertCellValueToPropertyTypeException(
                 stringExpectedValue,
                 PropertyName,
-                typeof(TProperty),
+                propertyType,
+                typeof(T),
+                ex
+            );
+        }
+        catch (InvalidCastException ex)
+        {
+            throw new CannotConvertCellValueToPropertyTypeException(
+                stringExpectedValue,
+                PropertyName,
+                propertyType,
                 typeof(T),
                 ex
             );

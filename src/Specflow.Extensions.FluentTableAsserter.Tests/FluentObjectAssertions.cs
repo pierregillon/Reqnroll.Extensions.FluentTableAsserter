@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using FluentAssertions;
-using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
+using FluentAssertions.Specialized;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
 using TechTalk.SpecFlow;
@@ -364,10 +364,10 @@ public class UserCode
         private record Person(string FirstName, string LastName);
     }
 
-    public class ColumnValueConversionToPropertyValue
+    public class FieldValueConversionToPropertyValue
     {
         [Fact]
-        public void Throws_when_column_value_cannot_be_converted_to_property_type()
+        public void Throws_when_field_value_cannot_be_converted_to_property_type()
         {
             var table = BuildTable(
                 new FieldValue("Value", "Test"),
@@ -385,11 +385,12 @@ public class UserCode
             action
                 .Should()
                 .Throw<CannotConvertCellValueToPropertyTypeException>()
-                .WithMessage("The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'");
+                .WithMessageStartingWith(
+                    "The value 'Test' cannot be converted to type 'Int32' of property 'Temperature.Value'.");
         }
 
         [Fact]
-        public void Accepts_when_column_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
+        public void Accepts_when_field_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
         {
             var table = BuildTable(
                 new FieldValue("Value", "hundred"),
@@ -401,7 +402,8 @@ public class UserCode
             var action = () => temperature
                 .ObjectShouldBeEquivalentToTable(table)
                 .WithProperty(x => x.Value, options => options
-                    .WithFieldValueConversion(columnValue => columnValue == "hundred" ? 100 : -1))
+                    .WithFieldToPropertyConversion(fieldValue => fieldValue == "hundred" ? 100 : -1)
+                )
                 .IgnoringField("Type")
                 .Assert();
 
@@ -486,19 +488,91 @@ public class UserCode
         }
     }
 
+    public class PropertyValueToFieldValueConversion
+    {
+        [Fact]
+        public void Throws_when_field_value_cannot_be_converted_to_property_type()
+        {
+            var table = BuildTable(
+                new FieldValue("Customer", "John Doe")
+            );
+
+            var root = new Root(new Customer("John Doe"));
+
+            var action = () => root
+                .ObjectShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Customer)
+                .Assert();
+
+            action
+                .Should()
+                .Throw<CannotConvertCellValueToPropertyTypeException>()
+                .WithMessageStartingWith(
+                    "The value 'John Doe' cannot be converted to type 'Customer' of property 'Root.Customer'.");
+        }
+
+        [Fact]
+        public void Accepts_when_field_value_cannot_be_converted_to_property_type_but_a_converter_is_defined()
+        {
+            var table = BuildTable(
+                new FieldValue("Customer", "John Doe")
+            );
+
+            var root = new Root(new Customer("John Doe"));
+
+            var action = () => root
+                .ObjectShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Customer,
+                    x => x.WithPropertyToFieldConversion(property => property.Name)
+                )
+                .Assert();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        [Fact]
+        public void Use_the_new_property_type_from_conversion_to_evaluate_equivalency()
+        {
+            var table = BuildTable(
+                new FieldValue("Name", "8")
+            );
+
+            var root = new Root(new Customer("John Doe"));
+
+            var action = () => root
+                .ObjectShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Customer.Name,
+                    x => x.WithPropertyToFieldConversion(property => property.Length)
+                )
+                .Assert();
+
+            action
+                .Should()
+                .NotThrow();
+        }
+
+        private record Root(Customer Customer);
+
+        private record Customer(string Name);
+    }
+
     public class ArrayConvertion
     {
         private readonly Table _table = BuildTable(new FieldValue("Names", "john, sam, eric"));
 
         [Fact]
-        public void Enumerable_property_type_is_comparable_with_table_column_value()
+        public void Enumerable_property_type_is_comparable_with_table_field_value()
         {
             var element = new Details(new[] { "john", "sam", "eric" });
 
             element
                 .ObjectShouldBeEquivalentToTable(_table)
                 .WithProperty(x => x.Names, o => o
-                    .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
                 )
                 .Assert();
         }
@@ -511,7 +585,7 @@ public class UserCode
             var action = () => element
                 .ObjectShouldBeEquivalentToTable(_table)
                 .WithProperty(x => x.Names, o => o
-                    .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
                 )
                 .Assert();
 
@@ -531,7 +605,7 @@ public class UserCode
             var action = () => element
                 .ObjectShouldBeEquivalentToTable(_table)
                 .WithProperty(x => x.Names, o => o
-                    .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
                 )
                 .Assert();
 
@@ -552,7 +626,7 @@ public class UserCode
             var action = () => element
                 .ObjectShouldBeEquivalentToTable(emptyTables)
                 .WithProperty(x => x.Names, o => o
-                    .WithFieldValueConversion(columnValue => columnValue.Split(',', StringSplitOptions.TrimEntries))
+                    .WithFieldToPropertyConversion(fieldValue => fieldValue.Split(',', StringSplitOptions.TrimEntries))
                 )
                 .Assert();
 
@@ -581,4 +655,15 @@ public class UserCode
     }
 
     private record FieldValue(string FieldName, string Value);
+}
+
+public static class ExceptionAssertionsExtensions
+{
+    public static void WithMessageStartingWith<T>(this ExceptionAssertions<T> assertions, string messageStart)
+        where T : Exception
+    {
+        var message = assertions.Which.Message;
+
+        message.Should().StartWith(messageStart);
+    }
 }
