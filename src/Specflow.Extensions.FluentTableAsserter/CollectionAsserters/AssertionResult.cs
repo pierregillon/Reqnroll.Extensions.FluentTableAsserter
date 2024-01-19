@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
@@ -16,8 +17,16 @@ public record AssertionResult(bool IsSuccess, string MemberName, object? ActualV
     public static AssertionResult Success
         => new(true, string.Empty, null, null);
 
-    public static AssertionResult Fail(string memberName, object? actualValue, object? expectedValue)
-        => new(false, memberName, actualValue, expectedValue);
+    public static AssertionResult Fail(Expression expression, object? actualValue, object? expectedValue)
+        => new(false, Print(expression), actualValue, expectedValue);
+
+    private static string Print(Expression expression)
+    {
+        var lambdaDeclaration = expression.ToString();
+        const char separator = '.';
+        var parts = lambdaDeclaration.Split(separator);
+        return parts.Length == 1 ? lambdaDeclaration : string.Join(separator, parts.Skip(1).ToArray());
+    }
 
     private static string PrintItems(IEnumerable enumerable)
     {

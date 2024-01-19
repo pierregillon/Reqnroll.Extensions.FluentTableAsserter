@@ -26,14 +26,16 @@ public record PropertyDefinition<T, TProperty>(
             actualValue?.GetType() ?? typeof(TProperty)
         );
 
-        return AssertEquivalent(actualValue, expectedValue);
+        return AreEquivalent(actualValue, expectedValue)
+            ? AssertionResult.Success
+            : AssertionResult.Fail(Expression.Body, actualValue, expectedValue);
     }
 
-    private AssertionResult AssertEquivalent(object? actualValue, object? expectedValue)
+    private static bool AreEquivalent(object? actualValue, object? expectedValue)
     {
         if (expectedValue is null && actualValue is null)
         {
-            return AssertionResult.Success;
+            return true;
         }
 
         var actualType = actualValue?.GetType() ?? typeof(TProperty);
@@ -45,13 +47,13 @@ public record PropertyDefinition<T, TProperty>(
 
             if (string.IsNullOrEmpty(actual) && string.IsNullOrEmpty(expected))
             {
-                return AssertionResult.Success;
+                return true;
             }
         }
 
         if (expectedValue is null || actualValue is null)
         {
-            return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
+            return false;
         }
 
         if (actualType.IsEnumerableType())
@@ -59,17 +61,10 @@ public record PropertyDefinition<T, TProperty>(
             var actual = (IEnumerable)actualValue;
             var expected = (IEnumerable)expectedValue;
 
-            return !Equivalent(actual, expected)
-                ? AssertionResult.Fail(PropertyName, actualValue, expectedValue)
-                : AssertionResult.Success;
+            return Equivalent(actual, expected);
         }
 
-        if (actualValue.Equals(expectedValue))
-        {
-            return AssertionResult.Success;
-        }
-
-        return AssertionResult.Fail(PropertyName, actualValue, expectedValue);
+        return actualValue.Equals(expectedValue);
     }
 
     private static bool Equivalent(IEnumerable actual, IEnumerable expected)

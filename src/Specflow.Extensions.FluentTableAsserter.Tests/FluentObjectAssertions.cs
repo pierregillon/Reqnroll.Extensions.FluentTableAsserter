@@ -365,6 +365,33 @@ public class UserCode
         private record Person(string FirstName, string LastName);
     }
 
+    public class ChainedObjects
+    {
+        [Fact]
+        public void Show_full_chained_property_name()
+        {
+            var table = BuildTable(new FieldValue("Name", "John Doe2"));
+
+            var root = new Root(new Customer("John Doe"));
+
+            var action = () => root
+                .ObjectShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Customer.Name)
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToObjectException>()
+                .WithMessageStartingWith(
+                    "'Customer.Name' actual data is 'John Doe' but should be 'John Doe2' from column 'Name'."
+                );
+        }
+
+        private record Root(Customer Customer);
+
+        private record Customer(string Name);
+    }
+
     public class FieldValueConversionToPropertyValue
     {
         [Fact]

@@ -354,6 +354,39 @@ public class UserCode
         private record Person(string FirstName, string LastName);
     }
 
+    public class ChainedObjects
+    {
+        [Fact]
+        public void Show_full_chained_property_name()
+        {
+            var table = BuildTable(
+                new[] { "Name" },
+                new[] { "John Doe2" }
+            );
+
+            var roots = new[]
+            {
+                new Root(new Customer("John Doe"))
+            };
+
+            var action = () => roots
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(x => x.Customer.Name)
+                .Assert();
+
+            action
+                .Should()
+                .Throw<ExpectedTableNotEquivalentToCollectionItemException>()
+                .WithMessageStartingWith(
+                    "At index 0, 'Customer.Name' actual data is 'John Doe' but should be 'John Doe2' from column 'Name'."
+                );
+        }
+
+        private record Root(Customer Customer);
+
+        private record Customer(string Name);
+    }
+
     public class ColumnValueConvertionToPropertyValue
     {
         private readonly Table _expectedTemperatureTable = new("Value", "Type");
@@ -491,32 +524,6 @@ public class UserCode
 
     public class PropertyValueTransformation
     {
-        [Fact]
-        public void Throws_when_field_value_cannot_be_converted_to_property_type()
-        {
-            var table = BuildTable(
-                new[] { "Customer" },
-                new[] { "John Doe" }
-            );
-
-            var roots = new[]
-            {
-                new Root(new Customer("John Doe"))
-            };
-
-            var action = () => roots
-                .CollectionShouldBeEquivalentToTable(table)
-                .WithProperty(x => x.Customer)
-                .Assert();
-
-            action
-                .Should()
-                .Throw<CannotConvertCellValueToPropertyTypeException>()
-                .WithMessageStartingWith(
-                    "The value 'John Doe' cannot be converted to type 'Customer' of property 'Root.Customer'."
-                );
-        }
-
         [Fact]
         public void Accepts_when_field_value_cannot_be_converted_to_property_type_but_a_tranformation_is_defined()
         {
