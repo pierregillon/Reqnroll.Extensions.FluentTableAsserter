@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 
 namespace Specflow.Extensions.FluentTableAsserter;
 
@@ -27,6 +28,19 @@ internal static class HumanReadableExtensions
 
         return true;
     }
+
+    public static object ParseEnum(Type enumType, string humanReadableString)
+    {
+        if (!TryParseEnum(enumType, humanReadableString, out var enumValue))
+        {
+            throw new CannotParseEnumToEnumValueException(humanReadableString, enumType);
+        }
+
+        return enumValue;
+    }
+
+    public static TEnum ParseEnum<TEnum>(string humanReadableString) where TEnum : Enum =>
+        (TEnum)ParseEnum(typeof(TEnum), humanReadableString);
 
     public static string FromHumanReadableToNormalized(this string humanizedString) =>
         string.IsNullOrWhiteSpace(humanizedString)

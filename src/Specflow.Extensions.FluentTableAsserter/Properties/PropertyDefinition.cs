@@ -111,12 +111,7 @@ public record PropertyDefinition<T, TProperty>(
 
             if (propertyType.IsEnum)
             {
-                if (!HumanReadableExtensions.TryParseEnum(propertyType, stringExpectedValue, out var enumValue))
-                {
-                    throw new CannotParseEnumToEnumValuException(stringExpectedValue, typeof(T));
-                }
-
-                return enumValue;
+                return HumanReadableExtensions.ParseEnum(propertyType, stringExpectedValue);
             }
 
             return Convert.ChangeType(stringExpectedValue, propertyType);

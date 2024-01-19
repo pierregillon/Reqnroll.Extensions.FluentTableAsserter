@@ -447,11 +447,39 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<CannotParseEnumToEnumValuException>()
-                .WithMessage("'test' cannot be parsed to any enum value of type Temperature.");
+                .Throw<CannotParseEnumToEnumValueException>()
+                .WithMessage("'test' cannot be parsed to any enum value of type TemperatureType.");
+        }
+
+        [Fact]
+        public void Allows_to_map_a_list_of_enums()
+        {
+            var table = BuildTable(
+                new[] { "Temperatures" },
+                new[] { "Celsius, Kelvin" }
+            );
+
+            var temperatureTypes = new[]
+            {
+                new TemperatureTypes(new[] { TemperatureType.Celsius, TemperatureType.Kelvin })
+            };
+
+            var action = () => temperatureTypes
+                .CollectionShouldBeEquivalentToTable(table)
+                .WithProperty(
+                    x => x.Temperatures,
+                    x => x.SplitCellValueBySeparator()
+                )
+                .Assert();
+
+            action
+                .Should()
+                .NotThrow();
         }
 
         private record Temperature(int Value, TemperatureType Type);
+
+        private record TemperatureTypes(IEnumerable<TemperatureType> Temperatures);
 
         private enum TemperatureType
         {

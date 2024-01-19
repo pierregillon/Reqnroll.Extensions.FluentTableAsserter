@@ -475,8 +475,8 @@ public class UserCode
 
             action
                 .Should()
-                .Throw<CannotParseEnumToEnumValuException>()
-                .WithMessage("'test' cannot be parsed to any enum value of type Temperature.");
+                .Throw<CannotParseEnumToEnumValueException>()
+                .WithMessage("'test' cannot be parsed to any enum value of type TemperatureType.");
         }
 
         private record Temperature(int Value, TemperatureType Type);
