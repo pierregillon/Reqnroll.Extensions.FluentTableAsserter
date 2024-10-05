@@ -25,16 +25,6 @@ public record PropertyConfigurationBuilder<T, TProperty>(
             }
         };
 
-    ISingleObjectPropertyConfiguration<T, TProperty> ISingleObjectPropertyConfiguration<T, TProperty>.
-        WithFieldValueConversion(Func<string, TProperty> convert) =>
-        this with
-        {
-            Value = Value with
-            {
-                ColumnToPropertyConversion = s => convert(s)
-            }
-        };
-
     public ISingleObjectPropertyConfiguration<T, TProperty> WithFieldToPropertyConversion(
         Func<string, TProperty> convert
     ) =>
@@ -91,4 +81,21 @@ public record PropertyConfigurationBuilder<T, TProperty>(
         {
             PropertyConversion = p => transform((TProperty)p!)
         });
+
+    ICollectionPropertyConfiguration<T, TProperty> ICollectionPropertyConfiguration<T, TProperty>.
+        NonStrictEnumerableComparison() =>
+        new PropertyConfigurationBuilder<T, TProperty>(
+            Value with
+            {
+                UseStrictEnumerableComparison = false
+            }
+        );
+
+    ISingleObjectPropertyConfiguration<T, TProperty> ISingleObjectPropertyConfiguration<T, TProperty>.
+        NonStrictEnumerableComparison() =>
+        new PropertyConfigurationBuilder<T, TProperty>(Value with
+            {
+                UseStrictEnumerableComparison = false
+            }
+        );
 }

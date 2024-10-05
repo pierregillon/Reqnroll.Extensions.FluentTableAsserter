@@ -80,3 +80,8 @@ Scenario: Assertion passes when using multiple same field as multiline expectati
       | Text  | Hi,                               |
       | Text  | Can you provide me your schedule? |
       | Text  | Thanks.                           |
+
+Scenario: Assertion passes when comparaing collection ignoring order
+    Then the received email is
+      | Field         | Value             |
+      | Subject parts | schedule, Provide |

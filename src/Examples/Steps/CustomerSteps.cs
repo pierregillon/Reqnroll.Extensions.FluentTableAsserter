@@ -1,5 +1,6 @@
 using Reqnroll;
 using Reqnroll.Extensions.FluentTableAsserter;
+using Reqnroll.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
 namespace Examples.Steps;
 
@@ -24,6 +25,14 @@ public class CustomerSteps
         .CollectionShouldBeEquivalentToTable(table)
         .WithProperty(x => x.FullName)
         .WithProperty(x => x.FullName, o => o.ComparedToColumn("Name"))
+        .WithProperty(
+            x => x.FullName.Split(" ", StringSplitOptions.TrimEntries),
+            o => o
+                .ComparedToColumn("Name parts")
+                .WithPropertyTransformation(chars => chars.Select(c => c.ToString()))
+                .SplitCellValueBySeparator()
+                .NonStrictEnumerableComparison()
+        )
         .WithProperty(x => x.EmailAddress)
         .WithProperty(x => x.EmailAddress, o => o.ComparedToColumn("Address"))
         .WithProperty(x => x.Job)

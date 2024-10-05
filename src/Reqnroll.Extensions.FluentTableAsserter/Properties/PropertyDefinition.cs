@@ -31,7 +31,7 @@ public record PropertyDefinition<T, TProperty>(
             : AssertionResult.Fail(Expression.Body, actualValue, expectedValue);
     }
 
-    private static bool AreEquivalent(object? actualValue, object? expectedValue)
+    private bool AreEquivalent(object? actualValue, object? expectedValue)
     {
         if (expectedValue is null && actualValue is null)
         {
@@ -67,7 +67,7 @@ public record PropertyDefinition<T, TProperty>(
         return actualValue.Equals(expectedValue);
     }
 
-    private static bool Equivalent(IEnumerable actual, IEnumerable expected)
+    private bool Equivalent(IEnumerable actual, IEnumerable expected)
     {
         var actualArray = actual.Enumerate().ToArray();
         var expectedArray = expected.Enumerate().ToArray();
@@ -77,7 +77,15 @@ public record PropertyDefinition<T, TProperty>(
             return false;
         }
 
-        if (actualArray.Zip(expectedArray, (x, y) => (x, y)).Any(value => !Equals(value.x, value.y)))
+        if (Configuration.UseStrictEnumerableComparison
+            && actualArray
+                .Zip(expectedArray, (x, y) => (x, y))
+                .Any(value => !Equals(value.x, value.y)))
+        {
+            return false;
+        }
+
+        if (!actualArray.All(a => expectedArray.Any(e => AreEquivalent(a, e))))
         {
             return false;
         }

@@ -1,5 +1,6 @@
 using Reqnroll;
 using Reqnroll.Extensions.FluentTableAsserter;
+using Reqnroll.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
 namespace Examples.Steps;
 
@@ -37,6 +38,13 @@ public class EmailSteps
         .WithProperty(x => x.ToEmail)
         .WithProperty(x => x.ToEmail, x => x.ComparedToField("To"))
         .WithProperty(x => x.Subject)
+        .WithProperty(
+            x => x.Subject.Split(" ", StringSplitOptions.TrimEntries).AsEnumerable(),
+            x => x
+                .ComparedToField("Subject parts")
+                .SplitFieldValueBySeparator()
+                .NonStrictEnumerableComparison()
+        )
         .WithProperty(x => x.PlainText)
         .WithProperty(x => x.PlainText, x => x.ComparedToField("Text"))
         .WithProperty(x => x.AttachmentCount)

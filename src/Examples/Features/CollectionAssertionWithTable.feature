@@ -31,6 +31,12 @@ Scenario: Assertion passes using alternative property names
       | John Doe  | john.doe@gmail.com  |
       | Sam Smith | sam.smith@gmail.com |
 
+Scenario: Assertion ignores collection order when specified
+    Then the customer list is
+      | Name parts |
+      | John, Doe  |
+      | Smith, Sam |
+
 @ErrorHandling
 Scenario: Assertion fails when value is different than expected one
     When asserting the customer list with

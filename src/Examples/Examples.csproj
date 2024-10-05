@@ -43,4 +43,9 @@
         </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Features\CollectionAssertionWithTable.feature"/>
+        <Content Include="Features\SingleObjectAssertionWithTable.feature"/>
+    </ItemGroup>
+
 </Project>
