@@ -6,13 +6,13 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>Reqnroll.Extensions.FluentTableAsserter.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.11.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2"/>
-        <PackageReference Include="Reqnroll" Version="2.0.2"/>
-        <PackageReference Include="Reqnroll.xUnit" Version="2.0.2"/>
         <PackageReference Include="xunit" Version="2.4.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,21 +26,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Reqnroll.Extensions.FluentTableAsserter\Reqnroll.Extensions.FluentTableAsserter.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Update="Features\CollectionAssertionWithTable.feature.cs">
-            <DependentUpon>ElementListAssertionWithTable.feature</DependentUpon>
-            <AutoGen>true</AutoGen>
-            <DesignTime>true</DesignTime>
-            <Visible>true</Visible>
-        </Compile>
-        <Compile Update="Features\SingleObjectAssertionWithTable.feature.cs">
-            <DependentUpon>ObjectAssertionWithTable.feature</DependentUpon>
-            <AutoGen>true</AutoGen>
-            <DesignTime>true</DesignTime>
-            <Visible>true</Visible>
-        </Compile>
     </ItemGroup>
 
 </Project>

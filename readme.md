@@ -1,22 +1,22 @@
-# Specflow Fluent Table Asserter
+# Reqnroll Fluent Table Asserter
 
-![Status](https://github.com/pierregillon/Specflow.Extensions.FluentTableAsserter/actions/workflows/dotnet.yml/badge.svg)
-![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Specflow.Extensions.FluentTableAsserter/main/src/Specflow.Extensions.FluentTableAsserter/Specflow.Extensions.FluentTableAsserter.csproj)
+![Status](https://github.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/actions/workflows/dotnet.yml/badge.svg)
+![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/main/src/Reqnroll.Extensions.FluentTableAsserter/Reqnroll.Extensions.FluentTableAsserter.csproj)
 ![Nuget](https://img.shields.io/badge/Nuget-available%20-green)
 
-A specflow extension library to simplify table assertion with fluent code.
+A reqnroll extension library to simplify table assertion with fluent code.
 
 ## Installation
 
-[Nuget package](https://www.nuget.org/packages/Crafty.Specflow.Extensions.FluentTableAsserter):
+[Nuget package](https://www.nuget.org/packages/Crafty.Reqnroll.Extensions.FluentTableAsserter):
 
-    dotnet add package Crafty.Specflow.Extensions.FluentTableAsserter
+    dotnet add package Crafty.Reqnroll.Extensions.FluentTableAsserter
 
 ## Why?
 
-Asserting Specflow table can be very painful in large scale application.
+Asserting Reqnroll table can be very painful in large scale application.
 Even
-if [SpecFlow.Assist Helpers](https://docs.specflow.org/projects/specflow/en/latest/Bindings/SpecFlow-Assist-Helpers.html)
+if [Reqnroll.Assist Helpers](https://docs.reqnroll.org/projects/reqnroll/en/latest/Bindings/Reqnroll-Assist-Helpers.html)
 is a good start to simplify data rehydration from table, it is not very flexible.
 
 The idea to this library is:
@@ -83,7 +83,7 @@ You can find more example [here](./src/Examples).
 
 ## Example: object comparison
 
-You can also compare a **single object** with a Specflow Table.
+You can also compare a **single object** with a Reqnroll Table.
 The first column should represent the field names, and the second column the values.
 
 For example, you can write the gherkin assertion:

@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reqnroll.Extensions.FluentTableAsserter", "Reqnroll.Extensions.FluentTableAsserter\Reqnroll.Extensions.FluentTableAsserter.csproj", "{61A0F17D-A2DA-4C59-BD56-CAC72058B261}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{BEB5A168-7763-417D-A978-FB20F15F83CC}"
+	ProjectSection(SolutionItems) = preProject
+		..\readme.md = ..\readme.md
+		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reqnroll.Extensions.FluentTableAsserter.Tests", "Reqnroll.Extensions.FluentTableAsserter.Tests\Reqnroll.Extensions.FluentTableAsserter.Tests.csproj", "{A06C8D77-41D5-4277-8B09-C49FE925E47B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{DBBD5080-D108-4874-A79A-2C741174028E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61A0F17D-A2DA-4C59-BD56-CAC72058B261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A0F17D-A2DA-4C59-BD56-CAC72058B261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A0F17D-A2DA-4C59-BD56-CAC72058B261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A0F17D-A2DA-4C59-BD56-CAC72058B261}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A06C8D77-41D5-4277-8B09-C49FE925E47B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A06C8D77-41D5-4277-8B09-C49FE925E47B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A06C8D77-41D5-4277-8B09-C49FE925E47B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A06C8D77-41D5-4277-8B09-C49FE925E47B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBBD5080-D108-4874-A79A-2C741174028E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBBD5080-D108-4874-A79A-2C741174028E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBBD5080-D108-4874-A79A-2C741174028E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBBD5080-D108-4874-A79A-2C741174028E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

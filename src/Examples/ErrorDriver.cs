@@ -21,7 +21,7 @@ public class ErrorDriver
         try
         {
             action();
-            throw new InvalidOperationException("Specflow: error should have occurred");
+            throw new InvalidOperationException("Reqnroll: error should have occurred");
         }
         catch (Exception e)
         {
