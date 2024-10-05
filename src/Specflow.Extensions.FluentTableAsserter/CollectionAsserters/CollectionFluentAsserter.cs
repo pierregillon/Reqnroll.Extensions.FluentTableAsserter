@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.Properties;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
 
@@ -41,8 +41,11 @@ public class CollectionFluentAsserter<T>(Table table, IEnumerable<T> actualValue
 
         if (table.RowCount != actualValues.Count())
         {
-            throw new TableRowCountIsDifferentThanElementCountException(table.RowCount, typeof(T),
-                actualValues.Count());
+            throw new TableRowCountIsDifferentThanElementCountException(
+                table.RowCount, 
+                typeof(T), 
+                actualValues.Count()
+            );
         }
 
         for (var rowIndex = 0; rowIndex < table.Rows.Count; rowIndex++)

@@ -1,7 +1,7 @@
 using System;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter;
 

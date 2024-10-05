@@ -2,8 +2,8 @@ using System.Reflection;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
 

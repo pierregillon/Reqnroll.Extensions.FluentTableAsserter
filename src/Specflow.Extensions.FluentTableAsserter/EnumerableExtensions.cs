@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter;
 

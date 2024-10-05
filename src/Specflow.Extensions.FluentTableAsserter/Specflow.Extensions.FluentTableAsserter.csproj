@@ -6,8 +6,9 @@
         <LangVersion>latest</LangVersion>
         <Version>2.1.1</Version>
         <PackageReleaseNotes>Add WithPropertyTransformation() on both collection and object asserter.
-Provide extension methods for splitting cell value with a separator.
-Display the full Expression body instead of the property name on error message.</PackageReleaseNotes>
+            Provide extension methods for splitting cell value with a separator.
+            Display the full Expression body instead of the property name on error message.
+        </PackageReleaseNotes>
         <Title>Specflow fluent table asserter</Title>
         <Description>A specflow extension library to simplify table assertion with fluent code.</Description>
         <PackageTags>specflow BDD behaviour-driven-development</PackageTags>
@@ -16,7 +17,7 @@ Display the full Expression body instead of the property name on error message.<
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.6.0"/>
-        <PackageReference Include="SpecFlow" Version="3.9.74"/>
+        <PackageReference Include="Reqnroll" Version="2.0.2"/>
     </ItemGroup>
 
     <PropertyGroup>

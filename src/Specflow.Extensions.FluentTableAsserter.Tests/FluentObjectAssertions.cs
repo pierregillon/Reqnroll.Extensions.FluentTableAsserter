@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 using FluentAssertions;
 using FluentAssertions.Specialized;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
 
@@ -42,7 +42,7 @@ public abstract class FluentObjectAssertions
         {
             const string code = @"
 
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter;
 
 namespace Test;

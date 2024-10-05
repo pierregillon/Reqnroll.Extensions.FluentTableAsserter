@@ -1,8 +1,8 @@
 using FluentAssertions;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.Tests;
 
@@ -18,7 +18,7 @@ public abstract class FluentCollectionAssertions
             const string code = @"
 
 using System.Collections.Generic;
-using TechTalk.SpecFlow;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter;
 
 namespace Test;

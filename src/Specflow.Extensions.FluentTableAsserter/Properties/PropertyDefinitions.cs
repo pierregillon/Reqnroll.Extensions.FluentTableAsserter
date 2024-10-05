@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Specflow.Extensions.FluentTableAsserter.CollectionAsserters.Exceptions;
 using Specflow.Extensions.FluentTableAsserter.Properties.Exceptions;
 
 namespace Specflow.Extensions.FluentTableAsserter.Properties;

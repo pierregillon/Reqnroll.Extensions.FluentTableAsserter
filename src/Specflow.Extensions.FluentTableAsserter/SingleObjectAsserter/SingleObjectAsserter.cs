@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Reqnroll;
 using Specflow.Extensions.FluentTableAsserter.Properties;
 using Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter.Exceptions;
-using TechTalk.SpecFlow;
 
 namespace Specflow.Extensions.FluentTableAsserter.SingleObjectAsserter;
 
