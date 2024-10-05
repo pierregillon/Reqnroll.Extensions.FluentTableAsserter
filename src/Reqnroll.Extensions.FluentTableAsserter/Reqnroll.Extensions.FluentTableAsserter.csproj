@@ -4,14 +4,11 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
-        <Version>2.1.1</Version>
-        <PackageReleaseNotes>Add WithPropertyTransformation() on both collection and object asserter.
-            Provide extension methods for splitting cell value with a separator.
-            Display the full Expression body instead of the property name on error message.
-        </PackageReleaseNotes>
+        <Version>3.0.0</Version>
+        <PackageReleaseNotes>Migrate from Specflow to Reqnroll</PackageReleaseNotes>
         <Title>Reqnroll fluent table asserter</Title>
         <Description>A reqnroll extension library to simplify table assertion with fluent code.</Description>
-        <PackageTags>reqnroll BDD behaviour-driven-development</PackageTags>
+        <PackageTags>reqnroll BDD behaviour-driven-development gherkin</PackageTags>
         <PackageId>Crafty.Reqnroll.Extensions.FluentTableAsserter</PackageId>
         <RootNamespace>Reqnroll.Extensions.FluentTableAsserter</RootNamespace>
     </PropertyGroup>
