@@ -15,9 +15,6 @@ A reqnroll extension library to simplify table assertion with fluent code.
 ## Why?
 
 Asserting Reqnroll table can be very painful in large scale application.
-Even
-if [Reqnroll.Assist Helpers](https://docs.reqnroll.org/projects/reqnroll/en/latest/Bindings/Reqnroll-Assist-Helpers.html)
-is a good start to simplify data rehydration from table, it is not very flexible.
 
 The idea to this library is:
 
