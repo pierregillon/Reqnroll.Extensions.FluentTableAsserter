@@ -1,8 +1,8 @@
 # Reqnroll Fluent Table Asserter
 
-![Status](https://github.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/actions/workflows/dotnet.yml/badge.svg)
-![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/main/src/Reqnroll.Extensions.FluentTableAsserter/Reqnroll.Extensions.FluentTableAsserter.csproj)
-![Nuget](https://img.shields.io/badge/Nuget-available%20-green)
+[![Status](https://github.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/actions/workflows/dotnet.yml/badge.svg)](https://github.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/actions/workflows/dotnet.yml)
+[![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Reqnroll.Extensions.FluentTableAsserter/main/src/Reqnroll.Extensions.FluentTableAsserter/Reqnroll.Extensions.FluentTableAsserter.csproj)](https://www.nuget.org/packages/Crafty.Reqnroll.Extensions.FluentTableAsserter)
+[![Nuget](https://img.shields.io/badge/Nuget-available%20-green)](https://www.nuget.org/packages/Crafty.Reqnroll.Extensions.FluentTableAsserter)
 
 A reqnroll extension library to simplify table assertion with fluent code.
 
